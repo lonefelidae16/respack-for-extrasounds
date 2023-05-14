@@ -5,12 +5,24 @@ const manifestUri = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.
 const resourcesUriTemplate = 'https://resources.download.minecraft.net/${first2Letter}/${hash}';
 
 export default class MinecraftAssets {
+    /**
+     * Parses the uri from file hash.
+     *
+     * @param {string} hash Target SHA.
+     * @returns {string} The uri string.
+     */
     static getResourceUri(hash) {
         return resourcesUriTemplate
             .replace('${first2Letter}', hash.slice(0, 2))
             .replace('${hash}', hash);
     }
 
+    /**
+     * Retrieves json objects for all Minecraft assets.
+     *
+     * @param {string} mcVersion Target Minecraft version.
+     * @returns {Promise<object>} The json objects.
+     */
     static async getAllMCAssetsJson(mcVersion = 'latest') {
         try {
             const manifestJson = await fetch(manifestUri).then(response => response.json());

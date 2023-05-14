@@ -13,9 +13,13 @@ const ESVersOptionsJSX = [
 ];
 
 const StartScreen = (props) => {
+    /** @type {[boolean, React.Dispatch<boolean>]} */
     const [loading, setLoading] = useState(false);
+    /** @type {[JSX.Element, React.Dispatch<JSX.Element>]} */
     const [resPackError, setResPackError] = useState(null);
+    /** @type {[JSX.Element, React.Dispatch<JSX.Element>]} */
     const [someError, setSomeError] = useState(null);
+    /** @type {[string, React.Dispatch<string>]} */
     const [extraSoundsVer, setExtraSoundsVer] = useState('dev');
 
     useMemo(() => {
@@ -30,11 +34,21 @@ const StartScreen = (props) => {
         });
     }, []);
 
+    /**
+     * Calls the App#onResourcePackDetermined.
+     *
+     * @param {MinecraftResPack} currentPack Target ResourcePack.
+     */
     const createProject = (currentPack) => {
         setResPackError(null);
         props.onResourcePackDetermined(currentPack);
     };
 
+    /**
+     * Handles file upload event.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} ev The event.
+     */
     const onChangeFile = (ev) => {
         setResPackError(null);
         const files = ev.target.files;
@@ -43,8 +57,11 @@ const StartScreen = (props) => {
         }
         setLoading(true);
         MinecraftResPack.loadResPack(files[0]).then(resPack => {
-            if (!resPack.soundsJson || !resPack.zip) {
-                setResPackError(<>Error while reading resource pack: <br /><code>assets/extrasounds/sounds.json</code><br />does not exist or invalid.</>);
+            if (!resPack.zip) {
+                setResPackError(<>Error while unzipping resource pack.</>);
+                setLoading(false);
+            } else if (!resPack.soundsJson) {
+                setResPackError(<>Error while reading resource pack:<br /><code>assets/extrasounds/sounds.json</code><br />does not exist or invalid.</>);
                 setLoading(false);
             } else {
                 createProject(resPack);
@@ -52,6 +69,9 @@ const StartScreen = (props) => {
         });
     };
 
+    /**
+     * Creates blank project.
+     */
     const onCreateBlank = () => {
         setLoading(true);
         let mcVer = 'latest';
@@ -68,23 +88,21 @@ const StartScreen = (props) => {
 
     return (props.hidden) ? null : (
         <main>
-            <div className='version-string'><Button size='small' variant='outlined' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>View source on GitHub</Button></div>
-            <h3 className='center'>Minecraft ResourcePack editor for Mod ExtraSounds</h3>
+            <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>View source on GitHub <span className='c-fab c-fab-external-link' /></Button></div>
+            <h3 className='center'>{props.name}</h3>
             <footer className='center'>Made with ReactJS</footer>
             <div className='screen-start'>
                 <div className='upload-file'>
                     <p>Continue Editing?</p>
-                    <p>
-                        <Button variant='contained' component='label' disabled={ loading }>
-                    Choose Resource Pack
-                            <input hidden name='file' type='file' accept='application/zip' onChange={ onChangeFile } />
-                        </Button>
-                        <div className='error-msg' hidden={ !resPackError }>{resPackError}</div>
-                    </p>
+                    <Button variant='contained' component='label' disabled={ loading }>
+                        Choose Resource Pack
+                        <input hidden name='file' type='file' accept='application/zip' onChange={ onChangeFile } />
+                    </Button>
+                    <div className='error-msg' hidden={ !resPackError }>{resPackError}</div>
                 </div>
                 <div className='create-new'>
                     <p>Start Customization.</p>
-                    <p>
+                    <div style={ { marginBottom: '1em' } }>
                         <FormControl fullWidth>
                             <InputLabel id='ver-select-label'>ExtraSounds Version</InputLabel>
                             <Select
@@ -97,11 +115,9 @@ const StartScreen = (props) => {
                                 {ESVersOptionsJSX}
                             </Select>
                         </FormControl>
-                    </p>
-                    <p>
-                        <Button variant='contained' color='secondary' disabled={ loading } onClick={ onCreateBlank }>Create New Project</Button>
-                        <div className='error-msg' hidden={ !someError }>{someError}</div>
-                    </p>
+                    </div>
+                    <Button variant='contained' color='secondary' disabled={ loading } onClick={ onCreateBlank }>Create New Project</Button>
+                    <div className='error-msg center' hidden={ !someError }>{someError}</div>
                 </div>
             </div>
             <div id='splash-animator' className={ loading ? '' : 'hide' }>
@@ -117,6 +133,7 @@ const StartScreen = (props) => {
 StartScreen.propTypes = {
     onResourcePackDetermined: PropTypes.func,
     hidden: PropTypes.bool,
+    name: PropTypes.string,
 };
 
 export default StartScreen;

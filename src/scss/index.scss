@@ -1,8 +1,14 @@
 @charset 'UTF-8';
 
 @use './splash_animator';
+@use './custom_fab';
 
 $-screen-separator: 1px solid #B0B0B0;
+
+html {
+    color: #FFF;
+    background-color: #121212;
+}
 
 .center {
     text-align: center;
@@ -43,6 +49,23 @@ main.screen {
     &.hide {
         opacity: 0;
     }
+}
+
+a {
+    color: skyblue;
+    text-decoration: none;
+}
+
+a:visited {
+    color: plum;
+}
+
+a:hover {
+    color: deepskyblue;
+}
+
+a:active {
+    color: dodgerblue;
 }
 
 footer {

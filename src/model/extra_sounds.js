@@ -1,6 +1,6 @@
 'use strict';
 
-import { versionSort } from '../util/versions';
+import MathHelper from '../util/math_helper';
 
 const soundsJsonUriTemplate = 'https://api.github.com/repos/lonefelidae16/extra-sounds/contents/src/main/resources/assets/extrasounds/sounds.json?ref=${revision}';
 
@@ -19,17 +19,26 @@ const getSoundsJsonUri = function (revision) {
 };
 
 export default class ExtraSounds {
+    /**
+     * Plays the ogg file which specified by uri.
+     *
+     * @param {string} uri    Target destination.
+     * @param {number} volume The volume value.
+     * @param {number} pitch  The pitch value.
+     */
     static playSound(uri, volume = 1.0, pitch = 1.0) {
-        if (pitch < 0.1) {
-            pitch = 0.1;
-        }
         player.pause();
         player.src = uri;
         player.volume = volume;
-        player.playbackRate = pitch;
+        player.playbackRate = MathHelper.clamp(pitch, 0.1, 2.0);
         player.play();
     }
 
+    /**
+     * Fetches the ExtraSounds tags from GitHub's API.
+     *
+     * @returns {Promise<array>} Array of Tags in Promise.
+     */
     static async fetchTagRevisions() {
         try {
             const json = await fetch(gitHubTagsUri).then(response => response.json());
@@ -44,8 +53,7 @@ export default class ExtraSounds {
                     mcVer = tagName.match(MCVerRegex['withoutPatch']);
                 }
                 if (!mcVer) {
-                    console.error(`failed to parse MCVersion from tag: '${tagName}'`);
-                    return;
+                    return [];
                 }
                 elem['minecraft_version'] = mcVer[0];
                 ret.push(elem);
@@ -56,19 +64,12 @@ export default class ExtraSounds {
         }
     }
 
-    static async fetchCompatibleMCVers() {
-        try {
-            const revisions = await this.fetchTagRevisions();
-            const mcVers = {};
-            revisions.forEach(tag => {
-                mcVers[tag['minecraft_version']] = true;
-            });
-            return versionSort(Object.keys(mcVers));
-        } catch {
-            return [];
-        }
-    }
-
+    /**
+     * Fetches the sounds.json from GitHub's repository.
+     *
+     * @param {string} revision Target revision, can be commit SHA, branch name or tag name. Default is 'dev'.
+     * @returns {Promise<object>} The json object which parsed from sounds.json.
+     */
     static async readSoundsJsonAsync(revision = 'dev') {
         try {
             return await fetch(getSoundsJsonUri(revision))
