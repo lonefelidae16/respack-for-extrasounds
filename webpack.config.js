@@ -13,7 +13,7 @@ const outputPath = Path.resolve(__dirname, 'dist');
 module.exports = {
     mode: 'production',
     entry: {
-        'main': './src/index.js',
+        'main': './src/app.js',
     },
     output: {
         filename: 'main.js',
