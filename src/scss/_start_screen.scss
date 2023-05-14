@@ -1,0 +1,21 @@
+@charset 'UTF-8';
+
+$-screen-separator: 1px solid #B0B0B0;
+
+.screen-start {
+    display: flex;
+    justify-content: center;
+
+    & > * {
+        padding: 2em;
+        text-align: center;
+    }
+}
+
+.upload-file {
+    border-right: $-screen-separator;
+}
+
+.create-new {
+    border-left: $-screen-separator;
+}

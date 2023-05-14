@@ -1,41 +1,27 @@
 @charset 'UTF-8';
 
-@use './splash_animator';
+@use './start_screen';
+@use './edit_screen';
+@use './simple_box_animator';
 @use './custom_fab';
-
-$-screen-separator: 1px solid #B0B0B0;
+@use './webfont';
 
 html {
     color: #FFF;
     background-color: #121212;
 }
 
+body.webfont-active {
+    // font-family: Minecraft, Roboto, Helvetica, Arial, sans-serif;
+}
+
 .center {
     text-align: center;
-}
-
-.screen-start {
-    display: flex;
-    justify-content: center;
-
-    & > * {
-        padding: 2em;
-        text-align: center;
-    }
-}
-
-.upload-file {
-    border-right: $-screen-separator;
-
 }
 
 .error-msg {
     font-size: small;
     color: lightcoral;
-}
-
-.create-new {
-    border-left: $-screen-separator;
 }
 
 .version-string {

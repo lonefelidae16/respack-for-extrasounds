@@ -1,47 +1,36 @@
 'use strict';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Button } from '@mui/material';
 
-import MinecraftResPack from '../model/minecraft_res_pack';
-import ExtraSounds from '../model/extra_sounds';
+import MinecraftResPack from '../model/minecraft_res_pack.js';
+import ESVersionSelector from '../components/es_version_selector.jsx';
+import ExtraSounds from '../model/extra_sounds.js';
 
-const ESTags = [];
-const ESVersOptionsJSX = [
-    <MenuItem key='dev' value='dev' defaultChecked>Branch dev</MenuItem>,
-];
-
+/**
+ * @param {{
+ *      onChangeWaitState: (state: boolean) => void,
+ * }} props
+ */
 const StartScreen = (props) => {
-    /** @type {[boolean, React.Dispatch<boolean>]} */
-    const [loading, setLoading] = useState(false);
-    /** @type {[JSX.Element, React.Dispatch<JSX.Element>]} */
+    /** @type {[React.JSX.Element, React.Dispatch<React.JSX.Element>]} */
     const [resPackError, setResPackError] = useState(null);
-    /** @type {[JSX.Element, React.Dispatch<JSX.Element>]} */
-    const [someError, setSomeError] = useState(null);
     /** @type {[string, React.Dispatch<string>]} */
-    const [extraSoundsVer, setExtraSoundsVer] = useState('dev');
+    const [extraSoundsVer, setExtraSoundsVer] = useState(ExtraSounds.defaultRef);
 
-    useMemo(() => {
-        ExtraSounds.fetchTagRevisions().then(revs => {
-            revs.forEach(rev => {
-                const tagName = rev['tag'];
-                ESVersOptionsJSX.push(<MenuItem key={ tagName } value={ tagName }>{tagName}</MenuItem>);
-                ESTags.push(rev);
-            });
-        }).catch(() => {
-            setSomeError(<>Failed to fetch tags from GitHub.</>);
-        });
-    }, []);
+    const { onChangeWaitState } = props;
 
     /**
-     * Calls the App#onResourcePackDetermined.
+     * Calls the App#onCreateProject.
      *
      * @param {MinecraftResPack} currentPack Target ResourcePack.
      */
     const createProject = (currentPack) => {
         setResPackError(null);
-        props.onResourcePackDetermined(currentPack);
+        props.onCreateProject(currentPack, extraSoundsVer).then(() => {
+            onChangeWaitState(false);
+        });
     };
 
     /**
@@ -55,15 +44,16 @@ const StartScreen = (props) => {
         if (!files || !files[0]) {
             return;
         }
-        setLoading(true);
+        onChangeWaitState(true);
         MinecraftResPack.loadResPack(files[0]).then(resPack => {
             if (!resPack.zip) {
                 setResPackError(<>Error while unzipping resource pack.</>);
-                setLoading(false);
+                onChangeWaitState(false);
             } else if (!resPack.soundsJson) {
                 setResPackError(<>Error while reading resource pack:<br /><code>assets/extrasounds/sounds.json</code><br />does not exist or invalid.</>);
-                setLoading(false);
+                onChangeWaitState(false);
             } else {
+                setExtraSoundsVer(ExtraSounds.getLatestVerFromMCVer(resPack.getMCVerFromPackFormat()));
                 createProject(resPack);
             }
         });
@@ -73,16 +63,9 @@ const StartScreen = (props) => {
      * Creates blank project.
      */
     const onCreateBlank = () => {
-        setLoading(true);
-        let mcVer = 'latest';
-        ESTags.forEach(tag => {
-            if (tag['tag'] !== extraSoundsVer) {
-                return;
-            }
-            mcVer = tag['minecraft_version'];
-        });
+        onChangeWaitState(true);
         const newPack = new MinecraftResPack();
-        newPack.setPackFormatFromMCVer(mcVer);
+        newPack.setPackFormatFromMCVer(ExtraSounds.getCompatMCVerFromExtraSoundsVer(extraSoundsVer));
         createProject(newPack);
     };
 
@@ -94,7 +77,7 @@ const StartScreen = (props) => {
             <div className='screen-start'>
                 <div className='upload-file'>
                     <p>Continue Editing?</p>
-                    <Button variant='contained' component='label' disabled={ loading }>
+                    <Button variant='contained' component='label'>
                         Choose Resource Pack
                         <input hidden name='file' type='file' accept='application/zip' onChange={ onChangeFile } />
                     </Button>
@@ -102,38 +85,19 @@ const StartScreen = (props) => {
                 </div>
                 <div className='create-new'>
                     <p>Start Customization.</p>
-                    <div style={ { marginBottom: '1em' } }>
-                        <FormControl fullWidth>
-                            <InputLabel id='ver-select-label'>ExtraSounds Version</InputLabel>
-                            <Select
-                                labelId='ver-select-label'
-                                id='ver-select'
-                                value={ extraSoundsVer }
-                                label='ExtraSounds Version'
-                                onChange={ ev => setExtraSoundsVer(ev.target.value) }
-                            >
-                                {ESVersOptionsJSX}
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <Button variant='contained' color='secondary' disabled={ loading } onClick={ onCreateBlank }>Create New Project</Button>
-                    <div className='error-msg center' hidden={ !someError }>{someError}</div>
+                    <div style={ { marginBottom: '1em' } }><ESVersionSelector onExtraSoundsVerChanged={ (ver) => setExtraSoundsVer(ver) } /></div>
+                    <Button variant='contained' color='secondary' onClick={ onCreateBlank }>Create New Project</Button>
                 </div>
-            </div>
-            <div id='splash-animator' className={ loading ? '' : 'hide' }>
-                <div className='surface surface-top' />
-                <div className='surface surface-frontside' />
-                <div className='surface surface-rightside' />
-                <div className='surface surface-leftside' />
             </div>
         </main>
     );
 };
 
 StartScreen.propTypes = {
-    onResourcePackDetermined: PropTypes.func,
+    onCreateProject: PropTypes.func,
     hidden: PropTypes.bool,
     name: PropTypes.string,
+    onChangeWaitState: PropTypes.func,
 };
 
 export default StartScreen;

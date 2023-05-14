@@ -1,0 +1,18 @@
+@charset 'UTF-8';
+
+.edit-header {
+    display: flex;
+    max-width: 1024px;
+    margin: 0 auto;
+
+    & > * {
+        flex-grow: 1;
+        align-items: flex-end;
+    }
+}
+
+.edit-info {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-around;
+}

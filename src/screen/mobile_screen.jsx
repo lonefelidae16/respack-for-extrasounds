@@ -4,6 +4,12 @@ import React from 'react';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 
+/**
+ * @param {{
+ *      hidden: boolean,
+ *      onContinueButtonPress: () => void,
+ * }} props
+ */
 const MobileScreen = (props) => {
     return (props.hidden) ? null : (
         <main className='center'>

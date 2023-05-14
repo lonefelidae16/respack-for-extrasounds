@@ -23,25 +23,24 @@ export default class MinecraftAssets {
      * @param {string} mcVersion Target Minecraft version.
      * @returns {Promise<object>} The json objects.
      */
-    static async getAllMCAssetsJson(mcVersion = 'latest') {
-        try {
-            const manifestJson = await fetch(manifestUri).then(response => response.json());
-            let versJsonUri = undefined;
-            if (mcVersion === 'latest') {
-                mcVersion = manifestJson['latest']['release'];
-            }
-            manifestJson['versions'].forEach(version => {
-                if (version['id'] !== mcVersion) {
-                    return;
+    static async getAllMCAssetsJsonAsync(mcVersion = 'latest') {
+        return fetch(manifestUri)
+            .then(response => response.json())
+            .then(json => {
+                let versJsonUri = undefined;
+                if (mcVersion === 'latest') {
+                    mcVersion = json['latest']['release'];
                 }
-                versJsonUri = version['url'];
-            });
-            const assetsJsonUri = await fetch(versJsonUri)
-                .then(response => response.json())
-                .then(versJson => versJson['assetIndex']['url']);
-            return await fetch(assetsJsonUri).then(response => response.json());
-        } catch {
-            return {};
-        }
+                json['versions'].forEach(version => {
+                    if (version['id'] !== mcVersion) {
+                        return;
+                    }
+                    versJsonUri = version['url'];
+                });
+                return fetch(versJsonUri);
+            }).then(response => response.json())
+            .then(versJson => versJson['assetIndex']['url'])
+            .then(response => response.json())
+            .catch(() => new Object());
     }
 }

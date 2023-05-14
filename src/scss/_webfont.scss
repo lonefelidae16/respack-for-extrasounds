@@ -1,0 +1,17 @@
+@charset 'UTF-8';
+
+@font-face {
+    font-family: Minecraft;
+    font-weight: 400;
+    src:
+        local('Minecraft-regular'),
+        url('./fonts/Minecraft.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: Minecraft;
+    font-weight: 700;
+    src:
+        local('Minecraft-bold'),
+        url('./fonts/Minecraft-bold.woff2') format('woff2');
+}

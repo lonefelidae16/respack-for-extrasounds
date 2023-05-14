@@ -10,13 +10,15 @@ const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 
 const outputPath = Path.resolve(__dirname, 'dist');
 
+const versionString = require('./package.json').version;
+
 module.exports = {
     mode: 'production',
     entry: {
         'main': './src/app.jsx',
     },
     output: {
-        filename: 'main.js',
+        filename: `main.js?ver=${versionString}`,
         path: outputPath
     },
     optimization: {
@@ -83,7 +85,7 @@ module.exports = {
             filename: 'index.html',
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].bundle.css'
+            filename: `[name].bundle.css?ver=${versionString}`
         }),
         new FixStyleOnlyEntriesPlugin(),
         new ESLintWebpackPlugin({
