@@ -1,0 +1,54 @@
+@charset 'UTF-8';
+
+@use './splash_animator';
+
+$-screen-separator: 1px solid #B0B0B0;
+
+.center {
+    text-align: center;
+}
+
+.screen-start {
+    display: flex;
+    justify-content: center;
+
+    & > * {
+        padding: 2em;
+        text-align: center;
+    }
+}
+
+.upload-file {
+    border-right: $-screen-separator;
+
+}
+
+.error-msg {
+    font-size: small;
+    color: lightcoral;
+}
+
+.create-new {
+    border-left: $-screen-separator;
+}
+
+.version-string {
+    font-size: small;
+    text-align: right;
+}
+
+main.screen {
+    transition: all .5s ease;
+
+    &.hide {
+        opacity: 0;
+    }
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: small;
+    background-color: #333;
+}

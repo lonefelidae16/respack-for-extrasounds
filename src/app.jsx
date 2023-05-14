@@ -6,8 +6,13 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import ExtraSounds from './model/extra_sounds.js';
-import MinecraftResPack from './model/minecraft_res_pack.js';
 import MinecraftAssets from './model/minecraft_assets.js';
+
+import EditScreen from './screen/edit_screen.jsx';
+import StartScreen from './screen/start_screen.jsx';
+
+import './scss/index.scss';
+import packageJson from '../package.json';
 
 const vanillaAssetsJson = {};
 
@@ -35,26 +40,32 @@ const App = () => {
     const [resPack, setResPack] = useState(null);
 
     useMemo(() => {
-        document.title = 'ResourcePack Editor for ExtraSounds';
+        document.title = packageJson.description;
     }, []);
 
     const createProject = (currentPack) => {
         MinecraftAssets.getAllMCAssetsJson(currentPack.getMCVerFromPackFormat())
             .then(json => {
+                Object.keys(vanillaAssetsJson).forEach(key => delete vanillaAssetsJson[key]);
                 Object.assign(vanillaAssetsJson, json);
-                setCurrentScreen('EditScreen');
-                setResPack(currentPack);
+                this.setState({
+                    currentScreen: 'EditScreen',
+                    resPack: currentPack,
+                });
             })
             .catch(error => {
                 console.error(error);
-                setSomeError('Failed to connect the Official Minecraft server.');
+                this.setState({ someError: <>Failed to connect the Official Minecraft server. <a href='#' onClick={ () => location.reload() }>Try to reload this page?</a></> });
             });
     };
 
     return (
         <ThemeProvider theme={ darkTheme }>
             <CssBaseline />
-            <h1>Hello World!</h1>
+            <div className='version-string'>{packageJson.version}</div>
+            <StartScreen onResourcePackDetermined={ createProject } hidden={ currentScreen !== 'StartScreen' } />
+            <EditScreen resPack={ resPack } hidden={ currentScreen !== 'EditScreen' } />
+            <div className='error-msg' hidden={ !someError }>{someError}</div>
         </ThemeProvider>
     );
 };

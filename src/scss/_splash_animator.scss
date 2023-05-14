@@ -1,0 +1,98 @@
+@charset 'UTF-8';
+
+$-anim-box-color: #DADADA;
+$-anim-color-grading-from: rgba($-anim-box-color, 0.7);
+$-anim-color-grading-to: rgba(#A7A7A7, 0.7);
+
+#splash-animator {
+    position: relative;
+    left: 50%;
+    width: 2em;
+    height: 2em;
+    margin-top: 2em;
+    transform-origin: 50% 50%;
+    animation: rotate-cube 1s infinite;
+    transform-style: preserve-3d;
+
+    .surface {
+        position: absolute;
+        width: 2em;
+        height: 2em;
+        background-color: $-anim-color-grading-from;
+        transition: all .5s ease;
+        backface-visibility: hidden;
+    }
+
+    &.hide > .surface {
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .surface-top {
+        background-color: $-anim-box-color;
+    }
+
+    .surface-frontside {
+        top: 2em;
+        left: 0;
+        transform: rotateX(-90deg);
+        transform-origin: top;
+        animation: color-grading-front 1s infinite;
+    }
+
+    .surface-rightside {
+        top: 0;
+        left: 2em;
+        transform: rotateY(90deg);
+        transform-origin: left top;
+        animation: color-grading-right 1s infinite;
+    }
+
+    .surface-leftside {
+        top: 0;
+        left: -2em;
+        transform: rotateY(-90deg);
+        transform-origin: right top;
+        animation: color-grading-left 1s infinite;
+    }
+}
+
+@keyframes rotate-cube {
+    0% {
+        transform: rotateX(65deg) rotateZ(-45deg);
+    }
+
+    100% {
+        transform: rotateX(65deg) rotateZ(45deg);
+    }
+}
+
+@keyframes color-grading-front {
+    0% {
+        background-color: $-anim-color-grading-from;
+    }
+
+    100% {
+        background-color: $-anim-color-grading-to;
+    }
+}
+
+@keyframes color-grading-left {
+    0% {
+        background-color: $-anim-color-grading-to;
+    }
+
+    100% {
+        background-color: rgba(#666, 0.7);
+    }
+}
+
+@keyframes color-grading-right {
+    0% {
+        background-color: rgba(#FFF, 0.7);
+    }
+
+    100% {
+        background-color: $-anim-color-grading-from;
+    }
+}
