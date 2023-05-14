@@ -6,7 +6,24 @@
         "build": "npx webpack",
         "watch": "npx webpack --mode=development --watch",
         "clean": "rimraf --glob dist/*",
-        "rebuild": "npm run clean && npm run build"
+        "rebuild": "npm run clean && npm run build",
+        "lint-staged": "lint-staged",
+        "prepare": "husky install .husky"
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,ts,tsx}": [
+            "eslint --fix",
+            "eslint"
+        ],
+        "src/**/*.{css,less,sass,scss}": [
+            "stylelint --fix",
+            "stylelint"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     },
     "author": "lonefelidae16",
     "repository": {
@@ -29,14 +46,31 @@
         "babel-preset-env": "^1.7.0",
         "babel-preset-react": "^6.24.1",
         "css-loader": "^6.7.3",
+        "eslint": "^8.38.0",
+        "eslint-config-standard": "^17.0.0",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-promise": "^6.1.1",
+        "eslint-plugin-react": "^7.32.2",
+        "eslint-plugin-standard": "^4.1.0",
+        "eslint-webpack-plugin": "^4.0.0",
         "html-loader": "^4.2.0",
         "html-webpack-plugin": "^5.5.0",
+        "husky": "^8.0.3",
         "jquery": "^3.6.4",
+        "lint-staged": "^13.2.1",
         "mini-css-extract-plugin": "^2.7.5",
         "peer": "^1.0.0",
         "rimraf": "^5.0.0",
         "sass": "^1.61.0",
         "sass-loader": "^13.2.2",
+        "stylelint": "^15.4.0",
+        "stylelint-config-recess-order": "^4.0.0",
+        "stylelint-config-recommended": "^11.0.0",
+        "stylelint-config-recommended-scss": "^9.0.1",
+        "stylelint-config-standard": "^32.0.0",
+        "stylelint-scss": "^4.6.0",
+        "stylelint-webpack-plugin": "^4.1.0",
         "terser-webpack-plugin": "^5.3.7",
         "webfontloader": "^1.6.28",
         "webpack": "^5.78.0",
