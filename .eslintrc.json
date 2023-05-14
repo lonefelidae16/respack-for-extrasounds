@@ -14,17 +14,31 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react", "react-hooks"
     ],
     "rules": {
         "indent": [ "warn", 4 ],
+        "array-bracket-spacing": [ "error", "never" ],
+        "arrow-spacing": [ "error", { "before": true, "after": true } ],
+        "brace-style": [ "error", "1tbs" ],
+        "camelcase": [ "error", { "properties": "never" } ],
+        "computed-property-spacing": [ "error", "never" ],
+        "curly": [ "error", "all" ],
         "linebreak-style": [ "warn", "unix" ],
         "quotes": [ "error", "single", { "avoidEscape": true } ],
+        "jsx-quotes": [ "error", "prefer-single" ],
         "semi": [ "warn", "always" ],
         "object-shorthand": "error",
+        "object-curly-spacing": [ "error", "always" ],
         "no-extra-semi": [ "warn" ],
         "no-unused-vars" : [ "warn" ],
         "no-undef": [ "error" ],
-        "no-empty": [ "warn" ]
+        "no-empty": [ "warn" ],
+        "react/jsx-boolean-value": [ "error" ],
+        "react/jsx-curly-brace-presence": [ "error" ],
+        "react/jsx-curly-spacing": [ "error", { "when": "always", "children": false } ],
+        "react/self-closing-comp": [ "error", { "component": true, "html": true } ],
+        "react-hooks/rules-of-hooks": [ "error" ],
+        "react-hooks/exhaustive-deps": [ "error" ]
     }
 }
