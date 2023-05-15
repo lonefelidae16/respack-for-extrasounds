@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControlLabel, IconButton, List, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Checkbox, FormControlLabel, IconButton, List, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
 
 /**
@@ -12,7 +12,7 @@ import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
  *      onItemDelete: (value: string) => void,
  *      onItemNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
- *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => void,
+ *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => Promise<void>,
  *      onAccordionClick: (value: string) => void,
  *      checkEntryExists: (entryName: string) => boolean,
  *      id: string,
@@ -28,6 +28,7 @@ const SoundEntryEditor = (props) => {
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [editingEntryName, setEditingEntryName] = useState(false);
     const [entryNameDuplicate, setEntryNameDuplicate] = useState(false);
+    const [playing, setPlaying] = useState(false);
     const [soundName, setSoundName] = useState(sounds.map(entry => ((typeof entry) === 'string') ? entry : entry['name']));
     const [volume, setVolume] = useState(sounds.map(entry => (entry['volume'] ? entry['volume'] : 1)));
     const [pitch, setPitch] = useState(sounds.map(entry => (entry['pitch'] ? entry['pitch'] : 1)));
@@ -122,7 +123,10 @@ const SoundEntryEditor = (props) => {
 
     const handlePlaySound = (index) => {
         if (onPlaySound) {
-            onPlaySound(soundName[index], volume[index], pitch[index], isEvent[index]);
+            setPlaying(true);
+            onPlaySound(soundName[index], volume[index], pitch[index], isEvent[index]).finally(() => {
+                setPlaying(false);
+            });
         }
     };
 
@@ -238,9 +242,14 @@ const SoundEntryEditor = (props) => {
                             </Tooltip>
                             <div className={ `${classPrefix}-preview-sound` }>
                                 <Tooltip title={ (errorWhenPlaySound) ? t('An error occurred...') : <>{t('Play this sound.')}<br />{t('The result may be different in game.')}</> } arrow>
-                                    <IconButton onClick={ () => handlePlaySound(index) }>
-                                        { (errorWhenPlaySound) ? <MusicOff color='error' /> : <MusicNoteOutlined /> }
-                                    </IconButton>
+                                    <Box component='span'>
+                                        <IconButton
+                                            disabled={ playing }
+                                            onClick={ () => handlePlaySound(index) }
+                                        >
+                                            { (errorWhenPlaySound) ? <MusicOff color='error' /> : <MusicNoteOutlined /> }
+                                        </IconButton>
+                                    </Box>
                                 </Tooltip>
                             </div>
                         </Stack>

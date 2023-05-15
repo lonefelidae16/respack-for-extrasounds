@@ -16,7 +16,7 @@ import FileJson from '../icons/file_json.jsx';
  *      onItemDelete: (value: string) => void,
  *      onItemNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
- *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => void,
+ *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => Promise<void>,
  *      checkEntryExists: (entryName: string) => boolean,
  *      title: string,
  *      id: string,

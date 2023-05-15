@@ -74,8 +74,8 @@ const App = () => {
      * @param {MinecraftResPack} currentPack Target ResourcePack.
      * @param {string} extraSoundsVer        Target ExtraSounds version.
      */
-    const createProject = async (currentPack, extraSoundsVer) => {
-        return editScreenRef.current.withState({
+    const createProject = (currentPack, extraSoundsVer) => {
+        editScreenRef.current.withState({
             resPack: currentPack,
             extraSoundsVer,
         }).then(() => {

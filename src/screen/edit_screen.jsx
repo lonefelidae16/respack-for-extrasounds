@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import { Button, TextField, Tooltip, Typography } from '@mui/material';
@@ -70,6 +70,19 @@ const EditScreen = forwardRef(
             return Promise.all(tasks);
         };
 
+        /**
+         * @param {BeforeUnloadEvent} ev
+         */
+        const handleBeforeUnloadEvent = (ev) => {
+            ev.preventDefault();
+            ev.returnValue = '';
+        };
+
+        useEffect(() => {
+            window.addEventListener('beforeunload', handleBeforeUnloadEvent, true);
+            return () => window.removeEventListener('beforeunload', handleBeforeUnloadEvent, true);
+        }, []);
+
         useImperativeHandle(ref, () => ({
             withState: async (obj) => {
                 setResPack(obj.resPack);
@@ -106,8 +119,8 @@ const EditScreen = forwardRef(
          * @param {number} volume The volume.
          * @param {number} pitch  The pitch.
          */
-        const playSound = (uri, volume, pitch) => {
-            ExtraSounds.playSound(uri, volume, pitch);
+        const playSoundAsync = async (uri, volume, pitch) => {
+            return ExtraSounds.playSoundAsync(uri, volume, pitch);
         };
 
         /**
@@ -117,13 +130,13 @@ const EditScreen = forwardRef(
          * @param {number} volume   The volume.
          * @param {number} pitch    The pitch.
          */
-        const playVanillaAsset = (fileName, volume, pitch) => {
+        const playVanillaAsset = async (fileName, volume, pitch) => {
             const hash = getAssetHash(fileName);
             if (!hash) {
                 handlePlaySoundError();
                 return;
             }
-            playSound(MinecraftAssets.getResourceUri(hash), volume, pitch);
+            return playSoundAsync(MinecraftAssets.getResourceUri(hash), volume, pitch);
         };
 
         /**
@@ -133,13 +146,13 @@ const EditScreen = forwardRef(
          * @param {number} volume   The volume.
          * @param {number} pitch    The pitch.
          */
-        const playBlobInZip = (fileName, volume, pitch) => {
-            resPack.getFile(fileName, 'uint8array').then(data => {
+        const playBlobInZip = async (fileName, volume, pitch) => {
+            return resPack.getFile(fileName, 'uint8array').then(data => {
                 if (!data) {
                     throw new Error();
                 }
                 const blob = new Blob([data.value], { type: 'audio/ogg' });
-                playSound(URL.createObjectURL(blob), volume, pitch);
+                return playSoundAsync(URL.createObjectURL(blob), volume, pitch);
             }).catch(() => {
                 handlePlaySoundError();
             });
@@ -283,7 +296,7 @@ const EditScreen = forwardRef(
          * @param {number} pitch
          * @param {boolean} isEvent
          */
-        const handlePlaySound = (entryName, volume, pitch, isEvent) => {
+        const handlePlaySound = async (entryName, volume, pitch, isEvent) => {
             let fileName = undefined, namespace = 'minecraft', path = undefined;
             const isVanilla = entryName.startsWith('minecraft:') || !(entryName.includes(':'));
             try {
@@ -302,8 +315,7 @@ const EditScreen = forwardRef(
                     } else if (pickedEntry['type'] === 'event') {
                         const entryVolume = (pickedEntry['volume']) ? pickedEntry['volume'] : 1;
                         const entryPitch = (pickedEntry['pitch']) ? pickedEntry['pitch'] : 1;
-                        handlePlaySound(pickedEntry['name'], volume * entryVolume, pitch * entryPitch, true);
-                        return;
+                        return handlePlaySound(pickedEntry['name'], volume * entryVolume, pitch * entryPitch, true);
                     } else {
                         fileName = pickedEntry['name'];
                         if (pickedEntry['volume']) {
@@ -325,9 +337,9 @@ const EditScreen = forwardRef(
                 fileName = `${namespace}/sounds/${path}.ogg`;
 
                 if (fileName in vanillaAssetJson['objects']) {
-                    playVanillaAsset(fileName, volume, pitch);
+                    return playVanillaAsset(fileName, volume, pitch);
                 } else {
-                    playBlobInZip(`assets/${fileName}`, volume, pitch);
+                    return playBlobInZip(`assets/${fileName}`, volume, pitch);
                 }
             } catch {
                 handlePlaySoundError();

@@ -35,12 +35,12 @@ export default class ExtraSounds {
      * @param {number} volume The volume value.
      * @param {number} pitch  The pitch value.
      */
-    static playSound(uri, volume = 1.0, pitch = 1.0) {
+    static async playSoundAsync(uri, volume = 1.0, pitch = 1.0) {
         player.pause();
         player.src = uri;
         player.volume = volume;
         player.playbackRate = MathHelper.clamp(pitch, 0.1, 2.0);
-        player.play();
+        return player.play();
     }
 
     /**
