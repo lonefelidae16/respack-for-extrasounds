@@ -28,9 +28,6 @@ const appName = packageJson.description;
 WebFont.load({
     custom: {
         families: ['Minecraft']
-    },
-    active: () => {
-        document.body.classList.add('webfont-active');
     }
 });
 
@@ -39,7 +36,6 @@ const App = () => {
     const [someError, setSomeError] = useState(null);
     /** @type {[string, React.Dispatch<string>]} */
     const [currentScreen, setCurrentScreen] = useState((document.documentElement.clientWidth <= 768) ? 'MobileScreen' : 'StartScreen');
-    // const [currentScreen, setCurrentScreen] = useState('EditScreen');
     const [mayBusyWait, setMayBusyWait] = useState(true);
 
     /** @type {React.MutableRefObject<{withState: (obj: {resPack: MinecraftResPack, extraSoundsVer: string}) => Promise<void>}>} */
@@ -51,6 +47,9 @@ const App = () => {
         setMayBusyWait(false);
     }, []);
 
+    /**
+     * @param {boolean} state
+     */
     const shouldShowBackdrop = (state) => {
         setMayBusyWait(state);
     };
@@ -69,6 +68,8 @@ const App = () => {
             setCurrentScreen('EditScreen');
         }).catch(() => {
             setSomeError(<>Failed to connect the Official Minecraft server. <a href='#' onClick={ () => location.reload() }>Try to reload this page?</a></>);
+        }).finally(() => {
+            setMayBusyWait(false);
         });
     };
 
@@ -79,7 +80,7 @@ const App = () => {
             <MobileScreen name={ appName } onContinueButtonPress={ () => setCurrentScreen('StartScreen') } hidden={ currentScreen !== 'MobileScreen' } />
             <StartScreen name={ appName } onCreateProject={ createProject } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'StartScreen' } />
             <EditScreen name={ appName } ref={ editScreenRef } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'EditScreen' } />
-            <div className='error-msg' hidden={ !someError }>{someError}</div>
+            <div className='error-msg center' hidden={ !someError }>{someError}</div>
             <Backdrop
                 sx={ { color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 } }
                 open={ mayBusyWait }

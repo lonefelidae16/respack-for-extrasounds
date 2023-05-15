@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Dialog, DialogTitle, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItemButton, ListItemText } from '@mui/material';
 import PropTypes from 'prop-types';
 
 /**
@@ -41,20 +41,20 @@ const SimpleDialog = (props) => {
     return (
         <Dialog onClose={ handleCancel } open={ isOpen }>
             <DialogTitle>{title}</DialogTitle>
-            <List sx={ { pt: 0 } }>
-                {values.map((val) => (
-                    <ListItem key={ val } disableGutters>
+            <DialogContent>
+                <List sx={ { pt: 0 } }>
+                    {values.map((val) => (
                         <ListItemButton onClick={ () => handleListItemClick(val) } key={ val }>
                             <Checkbox checked={ currentValue === val } />
                             <ListItemText primary={ val } />
                         </ListItemButton>
-                    </ListItem>
-                ))}
-            </List>
-            <div style={ { display: 'flex', justifyContent: 'space-around', padding: '1em' } }>
+                    ))}
+                </List>
+            </DialogContent>
+            <DialogActions>
                 <Button variant='outlined' onClick={ handleCancel }>{cancelStr}</Button>
                 <Button variant='contained' onClick={ handleOk }>{okStr}</Button>
-            </div>
+            </DialogActions>
         </Dialog>
     );
 };

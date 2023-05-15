@@ -11,6 +11,9 @@ import ExtraSounds from '../model/extra_sounds.js';
 /**
  * @param {{
  *      onChangeWaitState: (state: boolean) => void,
+ *      onCreateProject: (resPack: MinecraftResPack, extraSoundsVer: string) => Promise<void>,
+ *      hidden: boolean,
+ *      name: string,
  * }} props
  */
 const StartScreen = (props) => {
@@ -19,7 +22,7 @@ const StartScreen = (props) => {
     /** @type {[string, React.Dispatch<string>]} */
     const [extraSoundsVer, setExtraSoundsVer] = useState(ExtraSounds.defaultRef);
 
-    const { onChangeWaitState } = props;
+    const { hidden, name, onChangeWaitState, onCreateProject } = props;
 
     /**
      * Calls the App#onCreateProject.
@@ -28,9 +31,7 @@ const StartScreen = (props) => {
      */
     const createProject = (currentPack) => {
         setResPackError(null);
-        props.onCreateProject(currentPack, extraSoundsVer).then(() => {
-            onChangeWaitState(false);
-        });
+        onCreateProject(currentPack, extraSoundsVer);
     };
 
     /**
@@ -69,10 +70,10 @@ const StartScreen = (props) => {
         createProject(newPack);
     };
 
-    return (props.hidden) ? null : (
+    return (hidden) ? null : (
         <main>
             <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>View source on GitHub <span className='c-fab c-fab-external-link' /></Button></div>
-            <h3 className='center'>{props.name}</h3>
+            <h3 className='center'>{name}</h3>
             <footer className='center'>Made with ReactJS</footer>
             <div className='screen-start'>
                 <div className='upload-file'>

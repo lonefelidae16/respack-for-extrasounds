@@ -7,12 +7,9 @@
 @use './webfont';
 
 html {
+    overflow: hidden;
     color: #FFF;
     background-color: #121212;
-}
-
-body.webfont-active {
-    // font-family: Minecraft, Roboto, Helvetica, Arial, sans-serif;
 }
 
 .center {

@@ -16,3 +16,23 @@
     align-items: baseline;
     justify-content: space-around;
 }
+
+.edit-json-editor {
+    display: flex;
+    margin-top: 2em;
+
+    & > * {
+        flex-grow: 1;
+        max-width: 50vw;
+    }
+
+    .dragging {
+        border: 1px dashed lightskyblue;
+    }
+
+    .sound-entry-visualizer-title {
+        font-family: Minecraft, sans-serif;
+        font-size: x-large;
+        text-align: center;
+    }
+}
