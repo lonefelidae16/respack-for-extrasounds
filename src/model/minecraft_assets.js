@@ -1,5 +1,7 @@
 'use strict';
 
+import { curlFetch } from '../util/curl_fetch.js';
+
 const manifestUri = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json';
 
 const resourcesUriTemplate = 'https://resources.download.minecraft.net/${first2Letter}/${hash}';
@@ -24,7 +26,7 @@ export default class MinecraftAssets {
      * @returns {Promise<object>} The json objects.
      */
     static async getMCAssetsJsonAsync(mcVersion = 'latest') {
-        return fetch(manifestUri)
+        return curlFetch(manifestUri)
             .then(response => response.json())
             .then(json => {
                 let versJsonUri = undefined;
@@ -37,9 +39,9 @@ export default class MinecraftAssets {
                     }
                     versJsonUri = version['url'];
                 });
-                return fetch(versJsonUri);
+                return curlFetch(versJsonUri);
             }).then(response => response.json())
-            .then(versJson => fetch(versJson['assetIndex']['url']))
+            .then(versJson => curlFetch(versJson['assetIndex']['url']))
             .then(response => response.json())
             .catch(() => new Object());
     }
@@ -52,7 +54,7 @@ export default class MinecraftAssets {
      */
     static async getMCSoundsJsonAsync(mcVersion = 'latest') {
         return this.getMCAssetsJsonAsync(mcVersion)
-            .then(assetsJson => fetch(this.getResourceUri(assetsJson['objects']['minecraft/sounds.json']['hash'])))
+            .then(assetsJson => curlFetch(this.getResourceUri(assetsJson['objects']['minecraft/sounds.json']['hash'])))
             .then(response => response.json())
             .catch(() => new Object());
     }

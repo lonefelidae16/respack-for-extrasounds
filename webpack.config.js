@@ -7,6 +7,7 @@ const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
 const TerserPlugin = require('terser-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
+const CopyFilePlugin = require("copy-webpack-plugin")
 
 const outputPath = Path.resolve(__dirname, 'dist');
 
@@ -94,6 +95,14 @@ module.exports = {
         new StylelintWebpackPlugin({
             configFile: '.stylelintrc.js',
             fix: true,
+        }),
+        new CopyFilePlugin({
+            patterns: [
+                {
+                    from: Path.resolve(__dirname, 'backend'),
+                    to: Path.resolve(__dirname, 'dist/backend'),
+                },
+            ],
         }),
     ],
 

@@ -279,7 +279,7 @@ const EditScreen = forwardRef(
                     if (entryName.includes(':')) {
                         [entryNamespace, entryName] = entryName.split(':');
                     }
-                    /** @type {{name: string, volume: number, pitch: number, weight: number, type: string}[]} */
+                    /** @type {{name: string, volume: number, pitch: number, weight: number, type: string}[] | string[]} */
                     const entries = (isVanilla) ?
                         vanillaSoundsJson[entryName]['sounds'] :
                         modSoundsJson[entryNamespace][entryName]['sounds'];
