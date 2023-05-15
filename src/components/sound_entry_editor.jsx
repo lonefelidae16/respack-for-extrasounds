@@ -14,6 +14,7 @@ import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
  *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => void,
  *      onAccordionClick: (value: string) => void,
+ *      checkEntryExists: (entryName: string) => boolean,
  *      id: string,
  *      editable: boolean,
  *      isOpen: boolean,
@@ -21,10 +22,12 @@ import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
  */
 const SoundEntryEditor = (props) => {
     const { t } = useTranslation();
-    const { sounds, id, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound, editable, isOpen, errorWhenPlaySound } = props;
+    const { sounds, id, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound,
+        checkEntryExists, editable, isOpen, errorWhenPlaySound } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [editingEntryName, setEditingEntryName] = useState(false);
+    const [entryNameDuplicate, setEntryNameDuplicate] = useState(false);
     const [soundName, setSoundName] = useState(sounds.map(entry => ((typeof entry) === 'string') ? entry : entry['name']));
     const [volume, setVolume] = useState(sounds.map(entry => (entry['volume'] ? entry['volume'] : 1)));
     const [pitch, setPitch] = useState(sounds.map(entry => (entry['pitch'] ? entry['pitch'] : 1)));
@@ -53,11 +56,19 @@ const SoundEntryEditor = (props) => {
      * @param {React.KeyboardEvent} ev
      */
     const handleEntryNameEditor = (ev) => {
-        if (ev.key.match(/^enter$/i)) {
+        if (ev.key.match(/^enter$/i) && !entryNameDuplicate) {
             handleItemNameChange(ev.target.value);
         }
         if (ev.key.match(/^escape$/i)) {
             handleItemNameChange(null);
+        }
+    };
+
+    const checkEntryNameDuplication = (ev) => {
+        if (id === ev.target.value) {
+            setEntryNameDuplicate(false);
+        } else if (checkEntryExists) {
+            setEntryNameDuplicate(checkEntryExists(ev.target.value));
         }
     };
 
@@ -140,7 +151,10 @@ const SoundEntryEditor = (props) => {
                                 margin='dense'
                                 id={ `entry-editor-${id}` }
                                 variant='standard'
+                                color={ (entryNameDuplicate) ? 'error' : 'primary' }
+                                helperText={ (entryNameDuplicate) ? t('This name is already exists.') : '' }
                                 onKeyDown={ handleEntryNameEditor }
+                                onKeyUp={ checkEntryNameDuplication }
                                 onBlur={ () => handleItemNameChange(null) }
                                 onClick={ (ev) => ev.stopPropagation() }
                             />
@@ -244,6 +258,7 @@ SoundEntryEditor.propTypes = {
     onItemValueChange: PropTypes.func,
     onAccordionClick: PropTypes.func.isRequired,
     onPlaySound: PropTypes.func,
+    checkEntryExists: PropTypes.func,
     id: PropTypes.string.isRequired,
     editable: PropTypes.bool,
     isOpen: PropTypes.bool,

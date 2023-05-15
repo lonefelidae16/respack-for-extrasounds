@@ -184,13 +184,18 @@ const EditScreen = forwardRef(
         const dropSourceId = 'extra-sounds';
         const dropDestinationId = 'res-pack';
         const dragCssClassName = 'dragging';
+        const dragCssErrorClassName = 'error';
 
-        const handleDragStart = () => {
-            document.querySelector('.edit-json-editor [data-rbd-droppable-id=res-pack]').classList.add(dragCssClassName);
+        const handleDragStart = (component) => {
+            const dropAreaDOM = document.querySelector('.edit-json-editor [data-rbd-droppable-id=res-pack]');
+            dropAreaDOM.classList.add(dragCssClassName);
+            if (resPack.soundsJson[component['draggableId']]) {
+                dropAreaDOM.classList.add(dragCssErrorClassName);
+            }
         };
 
         const handleDrop = (result) => {
-            document.querySelector('.edit-json-editor [data-rbd-droppable-id=res-pack]').classList.remove(dragCssClassName);
+            document.querySelector('.edit-json-editor [data-rbd-droppable-id=res-pack]').classList.remove(dragCssClassName, dragCssErrorClassName);
             if (!resPack) {
                 return;
             }
@@ -240,6 +245,14 @@ const EditScreen = forwardRef(
             resPack.soundsJson[after] = resPack.soundsJson[before];
             delete resPack.soundsJson[before];
             notifyPackChange(resPack);
+        };
+
+        /**
+         * @param {string} entryName
+         * @returns {boolean} Returns true if the entryName already exists.
+         */
+        const handleCheckEntryName = (entryName) => {
+            return resPack.soundsJson[entryName] !== undefined;
         };
 
         /**
@@ -385,6 +398,7 @@ const EditScreen = forwardRef(
                                         onItemNameChange={ handleEditableItemNameChange }
                                         onItemValueChange={ handleEditableValueChange }
                                         onPlaySound={ handlePlaySound }
+                                        checkEntryExists={ handleCheckEntryName }
                                         errorWhenPlaySound={ errorWhenPlaySound }
                                         title={ t('ResourcePack') }
                                         id={ dropDestinationId }

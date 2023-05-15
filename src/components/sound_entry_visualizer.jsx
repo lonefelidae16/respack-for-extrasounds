@@ -17,6 +17,7 @@ import FileJson from '../icons/file_json.jsx';
  *      onItemNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
  *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => void,
+ *      checkEntryExists: (entryName: string) => boolean,
  *      title: string,
  *      id: string,
  *      draggable: boolean,
@@ -24,7 +25,8 @@ import FileJson from '../icons/file_json.jsx';
  * }} props
  */
 const SoundEntryVisualizer = (props) => {
-    const { objects, onItemClick, onItemDelete, onItemNameChange, onItemValueChange, onPlaySound, title, id, draggable, editable, errorWhenPlaySound } = props;
+    const { objects, onItemClick, onItemDelete, onItemNameChange, onItemValueChange, onPlaySound, checkEntryExists,
+        title, id, draggable, editable, errorWhenPlaySound } = props;
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [openedAccordion, setOpenedAccordion] = useState(false);
 
@@ -71,6 +73,7 @@ const SoundEntryVisualizer = (props) => {
                                     onItemValueChange={ onItemValueChange }
                                     onAccordionClick={ handleAccordionClick }
                                     onPlaySound={ onPlaySound }
+                                    checkEntryExists={ checkEntryExists }
                                     editable={ editable }
                                     isOpen={ openedAccordion === key }
                                     errorWhenPlaySound={ errorWhenPlaySound }
@@ -91,6 +94,7 @@ SoundEntryVisualizer.propTypes = {
     onItemNameChange: PropTypes.func,
     onItemValueChange: PropTypes.func,
     onPlaySound: PropTypes.func,
+    checkEntryExists: PropTypes.func,
     title: PropTypes.string,
     id: PropTypes.string.isRequired,
     draggable: PropTypes.bool,

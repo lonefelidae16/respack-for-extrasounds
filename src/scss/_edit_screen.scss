@@ -32,6 +32,11 @@
 
     .dragging {
         border: 1px dashed lightskyblue;
+        border-radius: 12px;
+
+        &.error {
+            border: 1px dashed lightcoral;
+        }
     }
 
     .sound-entry-visualizer-title {

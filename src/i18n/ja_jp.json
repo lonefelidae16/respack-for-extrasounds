@@ -33,6 +33,7 @@
     "Cancel": "キャンセル",
 
     "Entry": "エントリ",
+    "This name is already exists.": "このエントリ名はすでに使われています。",
     "Edit the Entry name:": "エントリ名を変更:",
     "Remove this Entry": "このエントリを削除",
     "Sound Name": "サウンド名",
