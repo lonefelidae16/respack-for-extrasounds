@@ -8,9 +8,7 @@
  */
 const curlFetch = async (url) => {
     let baseUri = `${location.protocol}//${location.host}${location.pathname}`;
-    if (baseUri.endsWith('/')) {
-        baseUri = baseUri.substring(0, baseUri.length - 1);
-    }
+    baseUri = baseUri.substring(0, baseUri.lastIndexOf('/'));
     return fetch(`${baseUri}/backend/curl.php`, {
         method: 'POST',
         headers: {
