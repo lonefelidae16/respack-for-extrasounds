@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Bugs
 
-* If there is a duplicate entry, the Rename function will overwrite the old one.
+* <small>_Any bugs/issues will be written here when found._</small>
 
 ## [0.1.0-indev] - 2023-05-15 JST
 ### ✨ Added
