@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControlLabel, IconButton, List, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
 
@@ -19,6 +20,7 @@ import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
  * }} props
  */
 const SoundEntryEditor = (props) => {
+    const { t } = useTranslation();
     const { sounds, id, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound, editable, isOpen, errorWhenPlaySound } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
     /** @type {[string | false, React.Dispatch<string | false>]} */
@@ -120,7 +122,7 @@ const SoundEntryEditor = (props) => {
             <AccordionSummary onClick={ () => handleListItemClick(id) }>
                 <div style={ { display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' } }>
                     <div hidden={ !editable } className={ `${classPrefix}-edit-entry` }>
-                        <Tooltip title={ `Edit the key name: "${id}"` } arrow>
+                        <Tooltip title={ `${t('Edit the Entry name:')} "${id}"` } arrow>
                             <IconButton onClick={ (ev) => {
                                 handleNameEdit(id);
                                 ev.stopPropagation();
@@ -140,11 +142,12 @@ const SoundEntryEditor = (props) => {
                                 variant='standard'
                                 onKeyDown={ handleEntryNameEditor }
                                 onBlur={ () => handleItemNameChange(null) }
+                                onClick={ (ev) => ev.stopPropagation() }
                             />
                         </div>
                     </div>
                     <div hidden={ !editable } className={ `${classPrefix}-remove-entry` }>
-                        <Tooltip title='Remove this entry' arrow>
+                        <Tooltip title={ t('Remove this Entry') } arrow>
                             <IconButton onClick={ (ev) => {
                                 handleItemDelete(id);
                                 ev.stopPropagation();
@@ -160,7 +163,7 @@ const SoundEntryEditor = (props) => {
                     <List key={ `${id}-sound${index}` }>
                         <TextField
                             key={ `${id}-sound${index}-name` }
-                            label='Name'
+                            label={ t('Sound Name') }
                             size='small'
                             variant='standard'
                             value={ soundName[index] }
@@ -170,7 +173,7 @@ const SoundEntryEditor = (props) => {
                             onChange={ (ev) => handleSoundNameChange(index, ev.target.value) }
                         />
                         <Stack>
-                            <small>Volume</small>
+                            <small>{t('Volume')}</small>
                             <Slider
                                 value={ volume[index] }
                                 size='small'
@@ -184,7 +187,7 @@ const SoundEntryEditor = (props) => {
                             />
                         </Stack>
                         <Stack>
-                            <small>Pitch</small>
+                            <small>{t('Pitch')}</small>
                             <Slider
                                 value={ pitch[index] }
                                 size='small'
@@ -199,7 +202,7 @@ const SoundEntryEditor = (props) => {
                             />
                         </Stack>
                         <Stack>
-                            <small>Weight</small>
+                            <small>{t('Weight')}</small>
                             <Slider
                                 value={ soundEntry['weight'] ? soundEntry['weight'] : 1 }
                                 size='small'
@@ -211,16 +214,16 @@ const SoundEntryEditor = (props) => {
                             />
                         </Stack>
                         <Stack direction='row' sx={ { justifyContent: 'space-between' } } >
-                            <Tooltip title='If unchecked, this "name" is interpreted as a file.'>
+                            <Tooltip title={ t('If unchecked, this "Sound Name" is interpreted as a file.') } arrow>
                                 <FormControlLabel
                                     control={ <Checkbox checked={ isEvent[index] } /> }
-                                    label='Event'
+                                    label={ t('Event') }
                                     disabled={ !editable }
                                     onChange={ (ev, checked) => handleSoundTypeChange(index, checked) }
                                 />
                             </Tooltip>
                             <div className={ `${classPrefix}-preview-sound` }>
-                                <Tooltip title={ (errorWhenPlaySound) ? 'An error occurred...' : <>Play this sound.<br />The result may be different in game.</> } arrow>
+                                <Tooltip title={ (errorWhenPlaySound) ? t('An error occurred...') : <>{t('Play this sound.')}<br />{t('The result may be different in game.')}</> } arrow>
                                     <IconButton onClick={ () => handlePlaySound(index) }>
                                         { (errorWhenPlaySound) ? <MusicOff color='error' /> : <MusicNoteOutlined /> }
                                     </IconButton>

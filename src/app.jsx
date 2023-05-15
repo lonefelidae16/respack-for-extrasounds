@@ -1,13 +1,17 @@
 'use strict';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { useTranslation } from 'react-i18next';
+import { useCookies } from 'react-cookie';
 import { Backdrop } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import WebFont from 'webfontloader';
 
 import ExtraSounds from './model/extra_sounds.js';
+
+import { i18n, cookieKey } from './i18n/config.js';
 
 import EditScreen from './screen/edit_screen.jsx';
 import StartScreen from './screen/start_screen.jsx';
@@ -37,6 +41,9 @@ const App = () => {
     /** @type {[string, React.Dispatch<string>]} */
     const [currentScreen, setCurrentScreen] = useState((document.documentElement.clientWidth <= 768) ? 'MobileScreen' : 'StartScreen');
     const [mayBusyWait, setMayBusyWait] = useState(true);
+    const [cookies] = useCookies([cookieKey]);
+
+    const { t } = useTranslation();
 
     /** @type {React.MutableRefObject<{withState: (obj: {resPack: MinecraftResPack, extraSoundsVer: string}) => Promise<void>}>} */
     const editScreenRef = useRef();
@@ -46,6 +53,13 @@ const App = () => {
         document.title = appName;
         setMayBusyWait(false);
     }, []);
+
+    useEffect(() => {
+        if (cookies[cookieKey] && i18n.language !== cookies[cookieKey]) {
+            i18n.changeLanguage(cookies[cookieKey]);
+            setSomeError(null);
+        }
+    }, [cookies]);
 
     /**
      * @param {boolean} state
@@ -67,7 +81,7 @@ const App = () => {
         }).then(() => {
             setCurrentScreen('EditScreen');
         }).catch(() => {
-            setSomeError(<>Failed to connect the Official Minecraft server. <a href='#' onClick={ () => location.reload() }>Try to reload this page?</a></>);
+            setSomeError(<>{t('Failed to connect the Official Minecraft server.')} <a href='#' onClick={ () => location.reload() }>{t('Try to reload this page?')}</a></>);
         }).finally(() => {
             setMayBusyWait(false);
         });

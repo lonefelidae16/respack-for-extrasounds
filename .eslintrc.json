@@ -5,7 +5,8 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        "plugin:jsonc/recommended-with-jsonc"
     ],
     "overrides": [
     ],
@@ -18,6 +19,7 @@
     ],
     "rules": {
         "indent": [ "warn", 4 ],
+        "jsonc/indent": [ "warn", 4, {} ],
         "array-bracket-spacing": [ "error", "never" ],
         "arrow-spacing": [ "error", { "before": true, "after": true } ],
         "brace-style": [ "error", "1tbs" ],

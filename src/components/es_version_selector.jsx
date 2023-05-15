@@ -1,8 +1,9 @@
 'use strict';
 
 import React, { useState } from 'react';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 import ExtraSounds from '../model/extra_sounds';
 
@@ -11,6 +12,8 @@ const esDefaultRef = ExtraSounds.defaultRef;
 const ESVersionSelector = (props) => {
     /** @type {[string, React.Dispatch<string>]} */
     const [extraSoundsVer, setExtraSoundsVer] = useState(props.defaultSelect ? props.defaultSelect : 'dev');
+
+    const { t } = useTranslation();
 
     /**
      * @param {import('@mui/material').SelectChangeEvent<string>} ev
@@ -22,12 +25,12 @@ const ESVersionSelector = (props) => {
 
     return (
         <FormControl fullWidth>
-            <InputLabel id='ver-select-label'>ExtraSounds version</InputLabel>
+            <InputLabel id='ver-select-label'>ExtraSounds {t('version')}</InputLabel>
             <Select
                 labelId='ver-select-label'
                 id='ver-select'
                 value={ extraSoundsVer }
-                label='ExtraSounds version'
+                label={ `ExtraSounds ${t('version')}` }
                 disabled={ props.disabled }
                 onChange={ onExtraSoundsVerChanged }
             >

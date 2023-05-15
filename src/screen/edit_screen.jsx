@@ -3,7 +3,8 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
-import { Button, TextField, Typography } from '@mui/material';
+import { Button, TextField, Tooltip, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import ExtraSounds from '../model/extra_sounds.js';
 import MinecraftAssets from '../model/minecraft_assets.js';
@@ -38,6 +39,8 @@ const EditScreen = forwardRef(
         const [errorWhenPlaySound, setErrorWhenPlaySound] = useState(false);
 
         const { hidden, onChangeWaitState } = props;
+
+        const { t } = useTranslation();
 
         /**
          * @param {MinecraftResPack} resPack
@@ -322,7 +325,7 @@ const EditScreen = forwardRef(
             (!resPack) ?
                 (
                     <>
-                        <div className='error-msg center'>Something went wrong... <a href='#' onClick={ () => location.reload() }>Please refresh this page.</a></div>
+                        <div className='error-msg center'>{t('Something went wrong...')} <a href='#' onClick={ () => location.reload() }>{t('Please refresh this page.')}</a></div>
                         <div style={ { position: 'absolute', left: '50%' } }><SimpleBoxAnimator /></div>
                     </>
                 ) : (
@@ -330,9 +333,9 @@ const EditScreen = forwardRef(
                         <main>
                             <div className='edit-header'>
                                 <div className='edit-info'>
-                                    <Typography>ResourcePack info:</Typography>
+                                    <Typography>{t('ResourcePack info:')}</Typography>
                                     <TextField
-                                        label='ExtraSounds version'
+                                        label={ `ExtraSounds ${t('version')}` }
                                         id='es-ver'
                                         value={ extraSoundsVer }
                                         size='small'
@@ -350,7 +353,7 @@ const EditScreen = forwardRef(
                                         sx={ { maxWidth: '4em' } }
                                     />
                                     <TextField
-                                        label='Format'
+                                        label={ t('Format') }
                                         id='pack-format-num'
                                         value={ resPack ? resPack.getPackFormat() : '' }
                                         size='small'
@@ -359,8 +362,12 @@ const EditScreen = forwardRef(
                                         sx={ { maxWidth: '3em' } }
                                     />
                                 </div>
-                                <div><Button variant='outlined' onClick={ onPackRetargetClick }>Retarget</Button></div>
-                                <div><Button variant='contained' color='success' onClick={ onPackDownload }>Download Zip</Button></div>
+                                <div>
+                                    <Tooltip title={ t('EXPERIMENTAL: This functionality is not completed yet.') } arrow>
+                                        <Button variant='outlined' onClick={ onPackRetargetClick }>{t('Retarget *')}</Button>
+                                    </Tooltip>
+                                </div>
+                                <div><Button variant='contained' color='success' onClick={ onPackDownload }>{t('Download Zip')}</Button></div>
                             </div>
                             <div className='edit-json-editor'>
                                 <DragDropContext onDragStart={ handleDragStart } onDragEnd={ handleDrop }>
@@ -379,7 +386,7 @@ const EditScreen = forwardRef(
                                         onItemValueChange={ handleEditableValueChange }
                                         onPlaySound={ handlePlaySound }
                                         errorWhenPlaySound={ errorWhenPlaySound }
-                                        title='ResourcePack'
+                                        title={ t('ResourcePack') }
                                         id={ dropDestinationId }
                                         editable
                                     />
@@ -388,12 +395,12 @@ const EditScreen = forwardRef(
                             <div className='error-msg center'>{someError}</div>
                         </main>
                         <SimpleDialog
-                            title='Retarget ResourcePack'
+                            title={ t('Retarget ResourcePack') }
                             values={ [ExtraSounds.defaultRef, ...ExtraSounds.revisions.map(tag => tag['tag'])] }
                             isOpen={ retargetDlgOpen }
                             selectedValue={ extraSoundsVer }
                             onClose={ onRetargetDlgClose }
-                            okString='Execute'
+                            okString={ t('Execute') }
                         />
                     </>
                 )

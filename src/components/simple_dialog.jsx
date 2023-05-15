@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItemButton, ListItemText } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { Button, Checkbox, Dialog, DialogActions, DialogTitle, List, ListItemButton, ListItemText } from '@mui/material';
 
 /**
  * @param {{
@@ -16,11 +17,12 @@ import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Li
  * }} props
  */
 const SimpleDialog = (props) => {
+    const { t } = useTranslation();
     const { title, values, onClose, selectedValue, isOpen, cancelString, okString } = props;
     /** @type {[string, React.Dispatch<string>]} */
     const [currentValue, setCurrentValue] = useState(selectedValue);
-    const cancelStr = (cancelString) ? cancelString : 'Cancel';
-    const okStr = (okString) ? okString : 'OK';
+    const cancelStr = (cancelString) ? cancelString : t('Cancel');
+    const okStr = (okString) ? okString : t('OK');
 
     const handleCancel = () => {
         onClose(null);
@@ -41,16 +43,14 @@ const SimpleDialog = (props) => {
     return (
         <Dialog onClose={ handleCancel } open={ isOpen }>
             <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
-                <List sx={ { pt: 0 } }>
-                    {values.map((val) => (
-                        <ListItemButton onClick={ () => handleListItemClick(val) } key={ val }>
-                            <Checkbox checked={ currentValue === val } />
-                            <ListItemText primary={ val } />
-                        </ListItemButton>
-                    ))}
-                </List>
-            </DialogContent>
+            <List sx={ { pt: 0 } }>
+                {values.map((val) => (
+                    <ListItemButton onClick={ () => handleListItemClick(val) } key={ val }>
+                        <Checkbox checked={ currentValue === val } />
+                        <ListItemText primary={ val } />
+                    </ListItemButton>
+                ))}
+            </List>
             <DialogActions>
                 <Button variant='outlined' onClick={ handleCancel }>{cancelStr}</Button>
                 <Button variant='contained' onClick={ handleOk }>{okStr}</Button>

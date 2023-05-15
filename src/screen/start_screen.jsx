@@ -3,11 +3,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+
+import { i18n } from '../i18n/config';
 
 import MinecraftResPack from '../model/minecraft_res_pack.js';
-import ESVersionSelector from '../components/es_version_selector.jsx';
 import ExtraSounds from '../model/extra_sounds.js';
 
+import ESVersionSelector from '../components/es_version_selector.jsx';
+import LanguageSelector from '../components/language_selector.jsx';
 import ExternalLink from '../icons/external_link.jsx';
 import ReactIcon from '../icons/react_icon.jsx';
 
@@ -26,6 +30,12 @@ const StartScreen = (props) => {
     const [extraSoundsVer, setExtraSoundsVer] = useState(ExtraSounds.defaultRef);
 
     const { hidden, name, onChangeWaitState, onCreateProject } = props;
+
+    const { t } = useTranslation();
+
+    i18n.on('languageChanged', () => {
+        setResPackError(null);
+    });
 
     /**
      * Calls the App#onCreateProject.
@@ -51,10 +61,10 @@ const StartScreen = (props) => {
         onChangeWaitState(true);
         MinecraftResPack.loadResPack(files[0]).then(resPack => {
             if (!resPack.zip) {
-                setResPackError(<>Error while unzipping resource pack.</>);
+                setResPackError(<>{t('Error while unzipping resource pack.')}</>);
                 onChangeWaitState(false);
             } else if (!resPack.soundsJson) {
-                setResPackError(<>Error while reading resource pack:<br /><code>assets/extrasounds/sounds.json</code><br />does not exist or invalid.</>);
+                setResPackError(<>{t('Error while reading resource pack:')}<br />{t('Following files are missing or invalid.')}<br /><code>assets/extrasounds/sounds.json</code></>);
                 onChangeWaitState(false);
             } else {
                 setExtraSoundsVer(ExtraSounds.getLatestVerFromMCVer(resPack.getMCVerFromPackFormat()));
@@ -75,23 +85,27 @@ const StartScreen = (props) => {
 
     return (hidden) ? null : (
         <main>
-            <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>View source on GitHub <ExternalLink /></Button></div>
+            <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>{t('View source on GitHub')} <ExternalLink /></Button></div>
             <h2 className='center minecraft'>{name}</h2>
             <footer className='center'>Made with ReactJS<ReactIcon width='1.2rem' height='1.2rem' /></footer>
             <div className='screen-start'>
                 <div className='upload-file'>
-                    <p>Continue Editing?</p>
+                    <p>{t('Continue Editing?')}</p>
                     <Button variant='contained' component='label'>
-                        Choose Resource Pack
+                        {t('Choose Resource Pack')}
                         <input hidden name='file' type='file' accept='application/zip' onChange={ onChangeFile } />
                     </Button>
                     <div className='error-msg' hidden={ !resPackError }>{resPackError}</div>
                 </div>
                 <div className='create-new'>
-                    <p>Start Customization.</p>
+                    <p>{t('Start Customization.')}</p>
                     <div style={ { marginBottom: '1em' } }><ESVersionSelector onExtraSoundsVerChanged={ (ver) => setExtraSoundsVer(ver) } /></div>
-                    <Button variant='contained' color='secondary' onClick={ onCreateBlank }>Create New Project</Button>
+                    <Button variant='contained' color='secondary' onClick={ onCreateBlank }>{t('Create New Project')}</Button>
                 </div>
+            </div>
+            <div className='center' style={ { marginTop: '1em' } }>
+                <LanguageSelector /><br />
+                <small>* {t('Localization feature is currently under development.')} *</small>
             </div>
         </main>
     );

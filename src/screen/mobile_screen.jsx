@@ -2,6 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@mui/material';
 
 import Caution from '../icons/caution.jsx';
@@ -14,13 +15,15 @@ import Caution from '../icons/caution.jsx';
  * }} props
  */
 const MobileScreen = (props) => {
+    const { t } = useTranslation();
+
     return (props.hidden) ? null : (
         <main className='center'>
             <h2 className='minecraft'>{props.name}</h2>
-            <p><Caution /> CAUTION <Caution /></p>
-            <p>Consider using the Desktop browser.</p>
-            <p>This app is not designed for Mobile or Tablet devices.</p>
-            <Button variant='contained' color='error' onClick={ () => props.onContinueButtonPress() }>Continue anyway</Button>
+            <p><Caution /> {t('CAUTION')} <Caution /></p>
+            <p>{t('Consider using the Desktop browser.')}</p>
+            <p>{t('This app is not designed for Mobile or Tablet devices.')}</p>
+            <Button variant='contained' color='error' onClick={ () => props.onContinueButtonPress() }>{t('Continue anyway')}</Button>
         </main>
     );
 };

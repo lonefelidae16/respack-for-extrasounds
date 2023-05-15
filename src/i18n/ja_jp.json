@@ -1,0 +1,49 @@
+{
+    "Language": "言語",
+
+    "CAUTION": "注意",
+    "Consider using the Desktop browser.": "デスクトップ ブラウザでの閲覧を推奨しています。",
+    "This app is not designed for Mobile or Tablet devices.": "このアプリはスマホまたはタブレット環境に非対応です。",
+    "Continue anyway": "無視して始める",
+
+    "Continue Editing?": "編集を再開できます。",
+    "Choose Resource Pack": "リソースパックを選択する",
+    "Start Customization.": "新しく始めましょう。",
+    "version": "バージョン",
+    "Create New Project": "新規プロジェクトを作成する",
+
+    "Failed to connect the Official Minecraft server.": "Minecraft 公式サーバとの通信に失敗しました。",
+    "Try to reload this page?": "ページを更新してみてください。",
+
+    "Error while unzipping resource pack.": "リソースパックの展開に失敗しました。",
+    "Error while reading resource pack:": "リソースパックの読み込みに失敗しました:",
+    "Following files are missing or invalid.": "以下のファイルが見つからないか、または無効です。",
+
+    "Something went wrong...": "何かがうまくいかなかったようです…",
+    "Please refresh this page.": "ページを更新してください。",
+
+    "ResourcePack info:": "リソースパック:",
+    "Format": "フォーマット",
+    "Retarget *": "バージョンを変更 *",
+    "EXPERIMENTAL: This functionality is not completed yet.": "実験的: パックバージョンの変更機能は完全には対応していません。",
+    "Download Zip": "パックをダウンロード",
+    "ResourcePack": "リソースパック",
+    "Retarget ResourcePack": "リソースパック バージョンを変更",
+    "Execute": "実行",
+    "Cancel": "キャンセル",
+
+    "Entry": "エントリ",
+    "Edit the Entry name:": "エントリ名を変更:",
+    "Remove this Entry": "このエントリを削除",
+    "Sound Name": "サウンド名",
+    "Volume": "ボリューム",
+    "Pitch": "ピッチ",
+    "Weight": "ウェイト",
+    "Event": "イベント",
+    "If unchecked, this \"Sound Name\" is interpreted as a file.": "チェックされていない場合、\"サウンド名\"はファイル名としてみなされます。",
+    "An error occurred...": "エラーが発生しました",
+    "Play this sound.": "このサウンドを再生します。",
+    "The result may be different in game.": "Minecraft で実際に聞こえる音と違うものになるかもしれません。",
+
+    "Localization feature is currently under development.": "翻訳機能の実用化まで今しばらくお待ちください"
+}
