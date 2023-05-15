@@ -12,6 +12,16 @@ All notable changes to this project will be documented in this file.
 
 * <small>_Any bugs/issues will be written here when found._</small>
 
+## [0.1.1-indev] - 2023-05-16 JST
+### ✨ Added
+
+* Displays confirmation message before leaving from the EditScreen.
+
+### 🔧 Fixed
+
+* To suppress error messages, it can no longer hit the play button repeatedly.
+* Asset fetch fails when url includes `index.html`.
+
 ## [0.1.0-indev] - 2023-05-15 JST
 ### ✨ Added
 
