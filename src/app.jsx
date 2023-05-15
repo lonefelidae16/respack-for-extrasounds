@@ -76,7 +76,7 @@ const App = () => {
     return (
         <ThemeProvider theme={ darkTheme }>
             <CssBaseline />
-            <div className='version-string'>{packageJson.version}</div>
+            <div className='version-string minecraft'>{packageJson.version}</div>
             <MobileScreen name={ appName } onContinueButtonPress={ () => setCurrentScreen('StartScreen') } hidden={ currentScreen !== 'MobileScreen' } />
             <StartScreen name={ appName } onCreateProject={ createProject } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'StartScreen' } />
             <EditScreen name={ appName } ref={ editScreenRef } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'EditScreen' } />

@@ -7,7 +7,6 @@
 
     & > * {
         flex-grow: 1;
-        align-items: flex-end;
     }
 }
 
@@ -18,10 +17,15 @@
 }
 
 .edit-json-editor {
+    $-margin-top: 1em;
+
     display: flex;
-    margin-top: 2em;
+    max-height: calc(90vh - $-margin-top);
+    margin-top: $-margin-top;
 
     & > * {
+        display: flex;
+        flex-direction: column;
         flex-grow: 1;
         max-width: 50vw;
     }
@@ -31,7 +35,6 @@
     }
 
     .sound-entry-visualizer-title {
-        font-family: Minecraft, sans-serif;
         font-size: x-large;
         text-align: center;
     }

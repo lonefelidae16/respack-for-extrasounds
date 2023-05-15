@@ -19,3 +19,19 @@ $-screen-separator: 1px solid #B0B0B0;
 .create-new {
     border-left: $-screen-separator;
 }
+
+@media screen and (width <= 600px) {
+    .screen-start {
+        flex-direction: column;
+    }
+
+    .upload-file {
+        border: none;
+        border-bottom: $-screen-separator;
+    }
+
+    .create-new {
+        border: none;
+        border-top: $-screen-separator;
+    }
+}

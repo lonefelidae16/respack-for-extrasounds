@@ -1,9 +1,9 @@
 'use strict';
 
-import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
-import { Button, TextField } from '@mui/material';
-import PropTypes from 'prop-types';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
+import PropTypes from 'prop-types';
+import { Button, TextField, Typography } from '@mui/material';
 
 import ExtraSounds from '../model/extra_sounds.js';
 import MinecraftAssets from '../model/minecraft_assets.js';
@@ -26,12 +26,16 @@ const EditScreen = forwardRef(
         /** @type {[object, React.Dispatch<object>]} */
         const [vanillaAssetJson, setVanillaAssetJson] = useState({});
         /** @type {[object, React.Dispatch<object>]} */
-        const [extraSoundsJson, setExtraSoundsJson] = useState({});
+        const [vanillaSoundsJson, setVanillaSoundsJson] = useState({});
+        /** @type {[{extrasounds: object}, React.Dispatch<object>]} */
+        const [modSoundsJson, setModSoundsJson] = useState({});
         /** @type {[string, React.Dispatch<string>]} */
         const [extraSoundsVer, setExtraSoundsVer] = useState(ExtraSounds.defaultRef);
         const [retargetDlgOpen, setRetargetDlgOpen] = useState(false);
         /** @type {[React.JSX.Element, React.Dispatch<React.JSX.Element>]} */
         const [someError, setSomeError] = useState(null);
+        /** @type {[number | false, React.Dispatch<number | false>]} */
+        const [errorWhenPlaySound, setErrorWhenPlaySound] = useState(false);
 
         const { hidden, onChangeWaitState } = props;
 
@@ -41,16 +45,23 @@ const EditScreen = forwardRef(
          * @returns {Promise<void>}
          */
         const updateJsonFromVersion = async (resPack, extraSoundsVer) => {
+            const mcVer = resPack.getMCVerFromPackFormat();
             const tasks = [];
             tasks.push((async () => {
-                await MinecraftAssets.getAllMCAssetsJsonAsync(resPack.getMCVerFromPackFormat())
+                await MinecraftAssets.getMCAssetsJsonAsync(mcVer)
                     .then(json => {
                         setVanillaAssetJson(json);
                     });
             })());
             tasks.push((async () => {
+                await MinecraftAssets.getMCSoundsJsonAsync(mcVer)
+                    .then(json => {
+                        setVanillaSoundsJson(json);
+                    });
+            })());
+            tasks.push((async () => {
                 await ExtraSounds.fetchSoundsJsonAsync(extraSoundsVer).then(json => {
-                    setExtraSoundsJson(json);
+                    setModSoundsJson({ extrasounds: json });
                 });
             })());
             return Promise.all(tasks);
@@ -63,6 +74,13 @@ const EditScreen = forwardRef(
                 return updateJsonFromVersion(obj.resPack, obj.extraSoundsVer);
             }
         }));
+
+        const handlePlaySoundError = () => {
+            if (errorWhenPlaySound) {
+                clearTimeout(errorWhenPlaySound);
+            }
+            setErrorWhenPlaySound(setTimeout(() => setErrorWhenPlaySound(false), 5000));
+        };
 
         /**
          * Retrieves the SHA of vanilla asset from its file name.
@@ -99,6 +117,7 @@ const EditScreen = forwardRef(
         const playVanillaAsset = (fileName, volume, pitch) => {
             const hash = getAssetHash(fileName);
             if (!hash) {
+                handlePlaySoundError();
                 return;
             }
             playSound(MinecraftAssets.getResourceUri(hash), volume, pitch);
@@ -114,10 +133,12 @@ const EditScreen = forwardRef(
         const playBlobInZip = (fileName, volume, pitch) => {
             resPack.getFile(fileName, 'uint8array').then(data => {
                 if (!data) {
-                    return;
+                    throw new Error();
                 }
                 const blob = new Blob([data.value], { type: 'audio/ogg' });
                 playSound(URL.createObjectURL(blob), volume, pitch);
+            }).catch(() => {
+                handlePlaySoundError();
             });
         };
 
@@ -190,7 +211,8 @@ const EditScreen = forwardRef(
          */
         const handleSourceItemClick = (entryName) => {
             if (!resPack.soundsJson[entryName]) {
-                resPack.soundsJson[entryName] = extraSoundsJson[entryName];
+                resPack.soundsJson[entryName] = modSoundsJson['extrasounds'][entryName];
+                resPack.soundsJson[entryName]['replace'] = true;
                 notifyPackChange(resPack);
             }
         };
@@ -208,7 +230,7 @@ const EditScreen = forwardRef(
         };
 
         const handleEditableItemNameChange = (before, after) => {
-            if (!resPack.soundsJson[before]) {
+            if (!resPack.soundsJson[before] || before === after) {
                 return;
             }
 
@@ -230,14 +252,69 @@ const EditScreen = forwardRef(
                 const { soundKey, soundEntryIndex, property, value } = obj;
                 if (value === null) {
                     delete resPack.soundsJson[soundKey]['sounds'][soundEntryIndex][property];
-                    notifyPackChange(resPack);
                 } else {
-                    resPack.soundsJson[soundKey]['replace'] = true;
                     resPack.soundsJson[soundKey]['sounds'][soundEntryIndex][property] = value;
-                    notifyPackChange(resPack);
                 }
             } catch {
                 notifyPackChange(resPack);
+            }
+        };
+
+        /**
+         *
+         * @param {string} entryName
+         * @param {number} volume
+         * @param {number} pitch
+         * @param {boolean} isEvent
+         */
+        const handlePlaySound = (entryName, volume, pitch, isEvent) => {
+            let fileName = undefined, namespace = 'minecraft', path = undefined;
+            const isVanilla = entryName.startsWith('minecraft:') || !(entryName.includes(':'));
+            try {
+                if (isEvent) {
+                    let entryNamespace = undefined;
+                    if (entryName.includes(':')) {
+                        [entryNamespace, entryName] = entryName.split(':');
+                    }
+                    /** @type {{name: string, volume: number, pitch: number, weight: number, type: string}[]} */
+                    const entries = (isVanilla) ?
+                        vanillaSoundsJson[entryName]['sounds'] :
+                        modSoundsJson[entryNamespace][entryName]['sounds'];
+                    const pickedEntry = entries[Math.floor(Math.random() * entries.length)];
+                    if ((typeof pickedEntry) === 'string') {
+                        fileName = pickedEntry;
+                    } else if (pickedEntry['type'] === 'event') {
+                        const entryVolume = (pickedEntry['volume']) ? pickedEntry['volume'] : 1;
+                        const entryPitch = (pickedEntry['pitch']) ? pickedEntry['pitch'] : 1;
+                        handlePlaySound(pickedEntry['name'], volume * entryVolume, pitch * entryPitch, true);
+                        return;
+                    } else {
+                        fileName = pickedEntry['name'];
+                        if (pickedEntry['volume']) {
+                            volume *= pickedEntry['volume'];
+                        }
+                        if (pickedEntry['pitch']) {
+                            pitch *= pickedEntry['pitch'];
+                        }
+                    }
+                } else {
+                    fileName = entryName;
+                }
+
+                if (fileName.includes(':')) {
+                    [namespace, path] = fileName.split(':');
+                } else {
+                    path = fileName;
+                }
+                fileName = `${namespace}/sounds/${path}.ogg`;
+
+                if (fileName in vanillaAssetJson['objects']) {
+                    playVanillaAsset(fileName, volume, pitch);
+                } else {
+                    playBlobInZip(`assets/${fileName}`, volume, pitch);
+                }
+            } catch {
+                handlePlaySoundError();
             }
         };
 
@@ -253,7 +330,7 @@ const EditScreen = forwardRef(
                         <main>
                             <div className='edit-header'>
                                 <div className='edit-info'>
-                                    <div>ResourcePack info:</div>
+                                    <Typography>ResourcePack info:</Typography>
                                     <TextField
                                         label='ExtraSounds version'
                                         id='es-ver'
@@ -288,7 +365,7 @@ const EditScreen = forwardRef(
                             <div className='edit-json-editor'>
                                 <DragDropContext onDragStart={ handleDragStart } onDragEnd={ handleDrop }>
                                     <SoundEntryVisualizer
-                                        objects={ extraSoundsJson }
+                                        objects={ modSoundsJson['extrasounds'] ? modSoundsJson['extrasounds'] : {} }
                                         onItemClick={ handleSourceItemClick }
                                         title='ExtraSounds'
                                         id={ dropSourceId }
@@ -300,6 +377,8 @@ const EditScreen = forwardRef(
                                         onItemDelete={ handleEditableItemDelete }
                                         onItemNameChange={ handleEditableItemNameChange }
                                         onItemValueChange={ handleEditableValueChange }
+                                        onPlaySound={ handlePlaySound }
+                                        errorWhenPlaySound={ errorWhenPlaySound }
                                         title='ResourcePack'
                                         id={ dropDestinationId }
                                         editable

@@ -23,7 +23,7 @@ export default class MinecraftAssets {
      * @param {string} mcVersion Target Minecraft version.
      * @returns {Promise<object>} The json objects.
      */
-    static async getAllMCAssetsJsonAsync(mcVersion = 'latest') {
+    static async getMCAssetsJsonAsync(mcVersion = 'latest') {
         return fetch(manifestUri)
             .then(response => response.json())
             .then(json => {
@@ -39,7 +39,20 @@ export default class MinecraftAssets {
                 });
                 return fetch(versJsonUri);
             }).then(response => response.json())
-            .then(versJson => versJson['assetIndex']['url'])
+            .then(versJson => fetch(versJson['assetIndex']['url']))
+            .then(response => response.json())
+            .catch(() => new Object());
+    }
+
+    /**
+     * Retrieves json objects for Minecraft sounds.
+     *
+     * @param {string} mcVersion Target Minecraft version.
+     * @returns {Promise<object>} The json objects.
+     */
+    static async getMCSoundsJsonAsync(mcVersion = 'latest') {
+        return this.getMCAssetsJsonAsync(mcVersion)
+            .then(assetsJson => fetch(this.getResourceUri(assetsJson['objects']['minecraft/sounds.json']['hash'])))
             .then(response => response.json())
             .catch(() => new Object());
     }

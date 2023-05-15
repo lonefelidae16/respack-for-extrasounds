@@ -1,11 +1,13 @@
 'use strict';
 
 import React, { useState } from 'react';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { List, ListItemButton, ListItemText } from '@mui/material';
 import PropTypes from 'prop-types';
-import { Draggable, Droppable } from 'react-beautiful-dnd';
 
 import SoundEntryEditor from './sound_entry_editor.jsx';
+
+import FileJson from '../icons/file_json.jsx';
 
 /**
  * @param {{
@@ -14,6 +16,7 @@ import SoundEntryEditor from './sound_entry_editor.jsx';
  *      onItemDelete: (value: string) => void,
  *      onItemNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
+ *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => void,
  *      title: string,
  *      id: string,
  *      draggable: boolean,
@@ -21,7 +24,7 @@ import SoundEntryEditor from './sound_entry_editor.jsx';
  * }} props
  */
 const SoundEntryVisualizer = (props) => {
-    const { objects, onItemClick, onItemDelete, onItemNameChange, onItemValueChange, title, id, draggable, editable } = props;
+    const { objects, onItemClick, onItemDelete, onItemNameChange, onItemValueChange, onPlaySound, title, id, draggable, editable, errorWhenPlaySound } = props;
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [openedAccordion, setOpenedAccordion] = useState(false);
 
@@ -29,12 +32,20 @@ const SoundEntryVisualizer = (props) => {
         onItemClick(entryName);
     };
 
+    const handleAccordionClick = (entryName) => {
+        if (openedAccordion === entryName) {
+            setOpenedAccordion(false);
+        } else {
+            setOpenedAccordion(entryName);
+        }
+    };
+
     return (
         <div>
-            <div id={ `sound-entry-visualizer-${id}-title` } className={ `sound-entry-visualizer-title sound-entry-visualizer-${id}-title` }><span className='c-fab c-fab-file-json' style={ { width: '2.25rem', height: '2.25rem' } } /> {title}</div>
+            <div id={ `sound-entry-visualizer-${id}-title` } className={ `minecraft sound-entry-visualizer-title sound-entry-visualizer-${id}-title` }><FileJson width='2.25rem' height='2.25rem' /> {title}</div>
             <Droppable droppableId={ id }>
                 {providedDroppable => (
-                    <List sx={ { pt: 0, minHeight: '50vh', maxHeight: '85vh', overflow: 'hidden', overflowY: 'auto' } } ref={ providedDroppable.innerRef } { ...providedDroppable.droppableProps }>
+                    <List sx={ { pt: 0, overflow: 'hidden', overflowY: 'auto' } } ref={ providedDroppable.innerRef } { ...providedDroppable.droppableProps }>
                         {Object.keys(objects).map((key, index) =>
                             draggable ? (
                                 <Draggable key={ key } draggableId={ key } index={ index }>
@@ -58,9 +69,11 @@ const SoundEntryVisualizer = (props) => {
                                     onItemDelete={ onItemDelete }
                                     onItemNameChange={ onItemNameChange }
                                     onItemValueChange={ onItemValueChange }
-                                    onAccordionClick={ (entryName) => setOpenedAccordion(entryName) }
+                                    onAccordionClick={ handleAccordionClick }
+                                    onPlaySound={ onPlaySound }
                                     editable={ editable }
                                     isOpen={ openedAccordion === key }
+                                    errorWhenPlaySound={ errorWhenPlaySound }
                                 />
                             ))}
                         { providedDroppable.placeholder }
@@ -77,10 +90,12 @@ SoundEntryVisualizer.propTypes = {
     onItemDelete: PropTypes.func,
     onItemNameChange: PropTypes.func,
     onItemValueChange: PropTypes.func,
+    onPlaySound: PropTypes.func,
     title: PropTypes.string,
     id: PropTypes.string.isRequired,
     draggable: PropTypes.bool,
     editable: PropTypes.bool,
+    errorWhenPlaySound: PropTypes.any,
 };
 
 export default SoundEntryVisualizer;

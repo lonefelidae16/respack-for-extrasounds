@@ -80,8 +80,12 @@ export default class MinecraftResPack {
      * @returns {Promise<string | number[] | Uint8Array | ArrayBuffer | Blob | Buffer>} The file content in Promise.
      */
     async getFile(fileName, type) {
-        return this.zip.file(fileName).async(type)
-            .catch(() => undefined);
+        const file = this.zip.file(fileName);
+        if (!file) {
+            return new Promise((resolve, reject) => reject(undefined));
+        }
+
+        return file.async(type).catch(() => undefined);
     }
 
     /**

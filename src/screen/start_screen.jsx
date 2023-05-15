@@ -8,6 +8,9 @@ import MinecraftResPack from '../model/minecraft_res_pack.js';
 import ESVersionSelector from '../components/es_version_selector.jsx';
 import ExtraSounds from '../model/extra_sounds.js';
 
+import ExternalLink from '../icons/external_link.jsx';
+import ReactIcon from '../icons/react_icon.jsx';
+
 /**
  * @param {{
  *      onChangeWaitState: (state: boolean) => void,
@@ -72,9 +75,9 @@ const StartScreen = (props) => {
 
     return (hidden) ? null : (
         <main>
-            <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>View source on GitHub <span className='c-fab c-fab-external-link' /></Button></div>
-            <h3 className='center'>{name}</h3>
-            <footer className='center'>Made with ReactJS</footer>
+            <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>View source on GitHub <ExternalLink /></Button></div>
+            <h2 className='center minecraft'>{name}</h2>
+            <footer className='center'>Made with ReactJS<ReactIcon width='1.2rem' height='1.2rem' /></footer>
             <div className='screen-start'>
                 <div className='upload-file'>
                     <p>Continue Editing?</p>

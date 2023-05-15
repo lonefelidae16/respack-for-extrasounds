@@ -15,3 +15,7 @@
         local('Minecraft-bold'),
         url('./fonts/Minecraft-bold.woff2') format('woff2');
 }
+
+html.wf-active .minecraft {
+    font-family: Minecraft, Roboto, Helvetica, Arial, sans-serif;
+}
