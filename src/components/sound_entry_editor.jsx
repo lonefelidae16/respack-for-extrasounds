@@ -68,7 +68,7 @@ const SoundEntryEditor = (props) => {
     };
 
     /**
-     * @param {React.KeyboardEvent} ev
+     * @param {React.ChangeEvent} ev
      */
     const checkValidEntryName = (ev) => {
         const value = ev.target.value;
@@ -165,8 +165,8 @@ const SoundEntryEditor = (props) => {
                                 error={ entryNameDuplicate || entryNameEmpty }
                                 helperText={ (entryNameDuplicate) ? t('This name is already exists.') : '' }
                                 onKeyDown={ handleEntryNameEditor }
-                                onKeyUp={ checkValidEntryName }
-                                onBlur={ () => handleItemNameChange(null) }
+                                onChange={ checkValidEntryName }
+                                onBlur={ (ev) => handleItemNameChange(ev.target.value) }
                                 onClick={ (ev) => ev.stopPropagation() }
                                 fullWidth
                             />
