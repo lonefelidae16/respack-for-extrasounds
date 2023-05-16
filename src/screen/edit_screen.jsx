@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import ExtraSounds from '../model/extra_sounds.js';
 import MinecraftAssets from '../model/minecraft_assets.js';
-import MinecraftResPack from '../model/minecraft_res_pack.js';
 
 import SimpleBoxAnimator from '../components/simple_box_animator.jsx';
 import SimpleDialog from '../components/simple_dialog.jsx';
@@ -20,6 +19,16 @@ const dropDestinationId = 'res-pack';
 const dragCssClassName = 'dragging';
 const dragCssErrorClassName = 'error';
 
+const handleBeforeUnload = (ev) => {
+    ev.preventDefault();
+    ev.returnValue = '';
+};
+
+const registerUnloadConfirmation = () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+};
+
 const EditScreen = forwardRef(
     /**
      * @param {{
@@ -28,8 +37,10 @@ const EditScreen = forwardRef(
      * }} props
      */
     (props, ref) => {
-        /** @type {[MinecraftResPack, React.Dispatch<MinecraftResPack>]} */
+        /** @type {[import('../model/minecraft_res_pack.js').default, React.Dispatch<any>]} */
         const [resPack, setResPack] = useState(null);
+        /** @type {[object, React.Dispatch<object>]} */
+        const [resSoundsJson, setResSoundsJson] = useState(null);
         /** @type {[object, React.Dispatch<object>]} */
         const [vanillaAssetJson, setVanillaAssetJson] = useState({});
         /** @type {[object, React.Dispatch<object>]} */
@@ -76,22 +87,17 @@ const EditScreen = forwardRef(
             return Promise.all(tasks);
         };
 
-        /**
-         * @param {BeforeUnloadEvent} ev
-         */
-        const handleBeforeUnloadEvent = (ev) => {
-            ev.preventDefault();
-            ev.returnValue = '';
-        };
-
         useEffect(() => {
-            window.addEventListener('beforeunload', handleBeforeUnloadEvent, true);
-            return () => window.removeEventListener('beforeunload', handleBeforeUnloadEvent, true);
-        }, []);
+            const isPackChanged = (resPack && resPack.soundsJson) !== resSoundsJson;
+            if (isPackChanged) {
+                registerUnloadConfirmation();
+            }
+        }, [resPack, resSoundsJson]);
 
         useImperativeHandle(ref, () => ({
             withState: async (obj) => {
                 setResPack(obj.resPack);
+                setResSoundsJson(obj.resPack.soundsJson);
                 setExtraSoundsVer(obj.extraSoundsVer);
                 return updateJsonFromVersion(obj.resPack, obj.extraSoundsVer);
             }
@@ -169,6 +175,8 @@ const EditScreen = forwardRef(
         };
 
         const onPackDownload = () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            resPack.soundsJson = resSoundsJson;
             resPack.generateZip();
         };
 
@@ -203,7 +211,7 @@ const EditScreen = forwardRef(
         const handleDragStart = (component) => {
             const dropAreaDOM = document.querySelector(dropAreaDOMSelector);
             dropAreaDOM.classList.add(dragCssClassName);
-            if (resPack.soundsJson[component['draggableId']]) {
+            if (resSoundsJson[component['draggableId']]) {
                 dropAreaDOM.classList.add(dragCssErrorClassName);
             }
         };
@@ -217,22 +225,14 @@ const EditScreen = forwardRef(
         };
 
         /**
-         * @param {MinecraftResPack} newPack
-         */
-        const notifyPackChange = (newPack) => {
-            const createNew = new MinecraftResPack();
-            Object.assign(createNew, newPack);
-            setResPack(createNew);
-        };
-
-        /**
          * @param {string} entryName
          */
         const handleSourceItemClick = (entryName) => {
-            if (!resPack.soundsJson[entryName]) {
-                resPack.soundsJson[entryName] = modSoundsJson['extrasounds'][entryName];
-                resPack.soundsJson[entryName]['replace'] = true;
-                notifyPackChange(resPack);
+            if (!resSoundsJson[entryName]) {
+                const newJson = { ...resSoundsJson };
+                newJson[entryName] = modSoundsJson['extrasounds'][entryName];
+                newJson[entryName]['replace'] = true;
+                setResSoundsJson(newJson);
             }
         };
 
@@ -240,22 +240,22 @@ const EditScreen = forwardRef(
         };
 
         const handleEditableItemDelete = (entryName) => {
-            if (!resPack.soundsJson[entryName]) {
+            if (!resSoundsJson[entryName]) {
                 return;
             }
-
-            delete resPack.soundsJson[entryName];
-            notifyPackChange(resPack);
+            const newJson = { ...resSoundsJson };
+            delete newJson[entryName];
+            setResSoundsJson(newJson);
         };
 
         const handleEditableItemNameChange = (before, after) => {
-            if (!resPack.soundsJson[before] || before === after) {
+            if (!resSoundsJson[before] || before === after) {
                 return;
             }
-
-            resPack.soundsJson[after] = resPack.soundsJson[before];
-            delete resPack.soundsJson[before];
-            notifyPackChange(resPack);
+            const newJson = { ...resSoundsJson };
+            newJson[after] = newJson[before];
+            delete newJson[before];
+            setResSoundsJson(newJson);
         };
 
         /**
@@ -263,7 +263,7 @@ const EditScreen = forwardRef(
          * @returns {boolean} Returns true if the entryName already exists.
          */
         const handleCheckEntryName = (entryName) => {
-            return resPack.soundsJson[entryName] !== undefined;
+            return resSoundsJson[entryName] !== undefined;
         };
 
         /**
@@ -278,12 +278,14 @@ const EditScreen = forwardRef(
             try {
                 const { soundKey, soundEntryIndex, property, value } = obj;
                 if (value === null) {
-                    delete resPack.soundsJson[soundKey]['sounds'][soundEntryIndex][property];
+                    delete resSoundsJson[soundKey]['sounds'][soundEntryIndex][property];
                 } else {
-                    resPack.soundsJson[soundKey]['sounds'][soundEntryIndex][property] = value;
+                    resSoundsJson[soundKey]['sounds'][soundEntryIndex][property] = value;
                 }
+                registerUnloadConfirmation();
             } catch {
-                notifyPackChange(resPack);
+                // ignored statement.
+                undefined;
             }
         };
 
@@ -402,7 +404,7 @@ const EditScreen = forwardRef(
                                         draggable
                                     />
                                     <SoundEntryVisualizer
-                                        objects={ resPack.soundsJson }
+                                        objects={ resSoundsJson }
                                         onItemClick={ handleEditableItemClick }
                                         onItemDelete={ handleEditableItemDelete }
                                         onItemNameChange={ handleEditableItemNameChange }

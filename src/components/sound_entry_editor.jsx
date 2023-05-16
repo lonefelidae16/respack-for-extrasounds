@@ -67,6 +67,9 @@ const SoundEntryEditor = (props) => {
         }
     };
 
+    /**
+     * @param {React.KeyboardEvent} ev
+     */
     const checkValidEntryName = (ev) => {
         const value = ev.target.value;
         if (entry === value) {
