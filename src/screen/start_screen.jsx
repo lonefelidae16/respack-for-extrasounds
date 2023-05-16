@@ -15,12 +15,13 @@ import LanguageSelector from '../components/language_selector.jsx';
 import ExternalLink from '../icons/external_link.jsx';
 import ReactIcon from '../icons/react_icon.jsx';
 
+import packageJson from '../../package.json';
+
 /**
  * @param {{
  *      onChangeWaitState: (state: boolean) => void,
  *      onCreateProject: (resPack: MinecraftResPack, extraSoundsVer: string) => Promise<void>,
  *      hidden: boolean,
- *      name: string,
  * }} props
  */
 const StartScreen = (props) => {
@@ -29,7 +30,7 @@ const StartScreen = (props) => {
     /** @type {[string, React.Dispatch<string>]} */
     const [extraSoundsVer, setExtraSoundsVer] = useState(ExtraSounds.defaultRef);
 
-    const { hidden, name, onChangeWaitState, onCreateProject } = props;
+    const { hidden, onChangeWaitState, onCreateProject } = props;
 
     const { t } = useTranslation();
 
@@ -67,7 +68,7 @@ const StartScreen = (props) => {
                 setResPackError(<>{t('Error while reading resource pack:')}<br />{t('Following files are missing or invalid.')}<br /><code>assets/extrasounds/sounds.json</code></>);
                 onChangeWaitState(false);
             } else {
-                setExtraSoundsVer(ExtraSounds.getLatestVerFromMCVer(resPack.getMCVerFromPackFormat()));
+                setExtraSoundsVer(ExtraSounds.getLatestRevFromMCVer(resPack.getMCVerFromPackFormat()));
                 createProject(resPack);
             }
         });
@@ -86,7 +87,7 @@ const StartScreen = (props) => {
     return (hidden) ? null : (
         <main>
             <div className='version-string'><Button size='small' variant='outlined' target='_blank' href='https://github.com/lonefelidae16/respack-for-extrasounds.git'>{t('View source on GitHub')} <ExternalLink /></Button></div>
-            <h2 className='center minecraft'>{name}</h2>
+            <h2 className='center minecraft'>{packageJson.description}</h2>
             <footer className='center'>Made with ReactJS<ReactIcon width='1.2rem' height='1.2rem' /></footer>
             <div className='screen-start'>
                 <div className='upload-file'>
@@ -114,7 +115,6 @@ const StartScreen = (props) => {
 StartScreen.propTypes = {
     onCreateProject: PropTypes.func,
     hidden: PropTypes.bool,
-    name: PropTypes.string,
     onChangeWaitState: PropTypes.func,
 };
 

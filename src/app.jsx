@@ -27,8 +27,6 @@ const darkTheme = createTheme({
     }
 });
 
-const appName = packageJson.description;
-
 WebFont.load({
     custom: {
         families: ['Minecraft']
@@ -50,7 +48,7 @@ const App = () => {
 
     useMemo(async () => {
         await ExtraSounds.fetchTagRevisionsAsync();
-        document.title = appName;
+        document.title = packageJson.description;
         setMayBusyWait(false);
     }, []);
 
@@ -91,9 +89,9 @@ const App = () => {
         <ThemeProvider theme={ darkTheme }>
             <CssBaseline />
             <div className='version-string minecraft'>{packageJson.version}</div>
-            <MobileScreen name={ appName } onContinueButtonPress={ () => setCurrentScreen('StartScreen') } hidden={ currentScreen !== 'MobileScreen' } />
-            <StartScreen name={ appName } onCreateProject={ createProject } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'StartScreen' } />
-            <EditScreen name={ appName } ref={ editScreenRef } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'EditScreen' } />
+            <MobileScreen onContinueButtonPress={ () => setCurrentScreen('StartScreen') } hidden={ currentScreen !== 'MobileScreen' } />
+            <StartScreen onCreateProject={ createProject } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'StartScreen' } />
+            <EditScreen ref={ editScreenRef } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'EditScreen' } />
             <div className='error-msg center' hidden={ !someError }>{someError}</div>
             <Backdrop
                 sx={ { color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 } }

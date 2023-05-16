@@ -9,25 +9,27 @@ import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
 /**
  * @param {{
  *      sounds: array,
+ *      entry: string,
  *      onItemDelete: (value: string) => void,
  *      onItemNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
  *      onPlaySound: (entryName: string, volume: number, pitch: number, isEvent: boolean) => Promise<void>,
  *      onAccordionClick: (value: string) => void,
  *      checkEntryExists: (entryName: string) => boolean,
- *      id: string,
  *      editable: boolean,
  *      isOpen: boolean,
+ *      errorWhenPlaySound: boolean,
  * }} props
  */
 const SoundEntryEditor = (props) => {
     const { t } = useTranslation();
-    const { sounds, id, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound,
+    const { sounds, entry, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound,
         checkEntryExists, editable, isOpen, errorWhenPlaySound } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [editingEntryName, setEditingEntryName] = useState(false);
     const [entryNameDuplicate, setEntryNameDuplicate] = useState(false);
+    const [entryNameEmpty, setEntryNameEmpty] = useState(false);
     const [playing, setPlaying] = useState(false);
     const [soundName, setSoundName] = useState(sounds.map(entry => ((typeof entry) === 'string') ? entry : entry['name']));
     const [volume, setVolume] = useState(sounds.map(entry => (entry['volume'] ? entry['volume'] : 1)));
@@ -57,7 +59,7 @@ const SoundEntryEditor = (props) => {
      * @param {React.KeyboardEvent} ev
      */
     const handleEntryNameEditor = (ev) => {
-        if (ev.key.match(/^enter$/i) && !entryNameDuplicate) {
+        if (ev.key.match(/^enter$/i) && !entryNameDuplicate && ev.target.value) {
             handleItemNameChange(ev.target.value);
         }
         if (ev.key.match(/^escape$/i)) {
@@ -65,12 +67,14 @@ const SoundEntryEditor = (props) => {
         }
     };
 
-    const checkEntryNameDuplication = (ev) => {
-        if (id === ev.target.value) {
+    const checkValidEntryName = (ev) => {
+        const value = ev.target.value;
+        if (entry === value) {
             setEntryNameDuplicate(false);
         } else if (checkEntryExists) {
-            setEntryNameDuplicate(checkEntryExists(ev.target.value));
+            setEntryNameDuplicate(checkEntryExists(value));
         }
+        setEntryNameEmpty(value.length === 0);
     };
 
     const handleItemNameChange = (newName) => {
@@ -99,7 +103,7 @@ const SoundEntryEditor = (props) => {
         const current = [...soundName];
         current[index] = value;
         setSoundName(current);
-        handleValueChange({ soundKey: id, soundEntryIndex: index, property: 'name', value });
+        handleValueChange({ soundKey: entry, soundEntryIndex: index, property: 'name', value });
     };
 
     const handleVolumeChange = (index, value) => {
@@ -118,7 +122,7 @@ const SoundEntryEditor = (props) => {
         const current = [...isEvent];
         current[index] = checked;
         setEvent(current);
-        handleValueChange({ soundKey: id, soundEntryIndex: index, property: 'type', value: (checked ? 'event' : null) });
+        handleValueChange({ soundKey: entry, soundEntryIndex: index, property: 'type', value: (checked ? 'event' : null) });
     };
 
     const handlePlaySound = (index) => {
@@ -134,12 +138,12 @@ const SoundEntryEditor = (props) => {
 
     return (
         <Accordion expanded={ isOpen }>
-            <AccordionSummary onClick={ () => handleListItemClick(id) }>
+            <AccordionSummary onClick={ () => handleListItemClick(entry) }>
                 <div style={ { display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' } }>
                     <div hidden={ !editable } className={ `${classPrefix}-edit-entry` }>
-                        <Tooltip title={ `${t('Edit the Entry name:')} "${id}"` } arrow>
+                        <Tooltip title={ `${t('Edit the Entry name:')} "${entry}"` } arrow>
                             <IconButton onClick={ (ev) => {
-                                handleNameEdit(id);
+                                handleNameEdit(entry);
                                 ev.stopPropagation();
                             } }>
                                 <Edit />
@@ -147,27 +151,28 @@ const SoundEntryEditor = (props) => {
                         </Tooltip>
                     </div>
                     <div style={ { flexGrow: 1 } } className={ `${classPrefix}-entry-name` }>
-                        <Typography hidden={ entryNameEditorShow && editingEntryName === id }>{id}</Typography>
-                        <div hidden={ !(entryNameEditorShow && editingEntryName === id) }>
+                        <Typography hidden={ entryNameEditorShow && editingEntryName === entry }>{entry}</Typography>
+                        <div hidden={ !(entryNameEditorShow && editingEntryName === entry) }>
                             <TextField
-                                label='Entry'
-                                defaultValue={ id }
+                                label={ t('Entry') }
+                                defaultValue={ entry }
                                 margin='dense'
-                                id={ `entry-editor-${id}` }
+                                id={ `entry-editor-${entry}` }
                                 variant='standard'
-                                color={ (entryNameDuplicate) ? 'error' : 'primary' }
+                                error={ entryNameDuplicate || entryNameEmpty }
                                 helperText={ (entryNameDuplicate) ? t('This name is already exists.') : '' }
                                 onKeyDown={ handleEntryNameEditor }
-                                onKeyUp={ checkEntryNameDuplication }
+                                onKeyUp={ checkValidEntryName }
                                 onBlur={ () => handleItemNameChange(null) }
                                 onClick={ (ev) => ev.stopPropagation() }
+                                fullWidth
                             />
                         </div>
                     </div>
                     <div hidden={ !editable } className={ `${classPrefix}-remove-entry` }>
                         <Tooltip title={ t('Remove this Entry') } arrow>
                             <IconButton onClick={ (ev) => {
-                                handleItemDelete(id);
+                                handleItemDelete(entry);
                                 ev.stopPropagation();
                             } }>
                                 <Delete color='error' />
@@ -178,9 +183,9 @@ const SoundEntryEditor = (props) => {
             </AccordionSummary>
             <AccordionDetails>
                 {sounds.map((soundEntry, index) => (
-                    <List key={ `${id}-sound${index}` }>
+                    <List key={ `${entry}-sound${index}` }>
                         <TextField
-                            key={ `${id}-sound${index}-name` }
+                            key={ `${entry}-sound${index}-name` }
                             label={ t('Sound Name') }
                             size='small'
                             variant='standard'
@@ -199,8 +204,12 @@ const SoundEntryEditor = (props) => {
                                 step={ 0.01 }
                                 min={ 0 }
                                 max={ 1 }
+                                marks={ [
+                                    { value: 0.5, label: '0.5' },
+                                    { value: 1.0, label: '1.0' },
+                                ] }
                                 onChange={ (ev, value) => handleVolumeChange(index, value) }
-                                onChangeCommitted={ (ev, value) => handleValueChange({ soundKey: id, soundEntryIndex: index, property: 'volume', value }) }
+                                onChangeCommitted={ (ev, value) => handleValueChange({ soundKey: entry, soundEntryIndex: index, property: 'volume', value }) }
                                 disabled={ !editable }
                             />
                         </Stack>
@@ -213,9 +222,13 @@ const SoundEntryEditor = (props) => {
                                 step={ 0.01 }
                                 min={ 0.1 }
                                 max={ 2 }
+                                marks={ [
+                                    { value: 1.0, label: '1.0' },
+                                    { value: 2.0, label: '2.0' },
+                                ] }
                                 color='secondary'
                                 onChange={ (ev, value) => handlePitchChange(index, value) }
-                                onChangeCommitted={ (ev, value) => handleValueChange({ soundKey: id, soundEntryIndex: index, property: 'pitch', value }) }
+                                onChangeCommitted={ (ev, value) => handleValueChange({ soundKey: entry, soundEntryIndex: index, property: 'pitch', value }) }
                                 disabled={ !editable }
                             />
                         </Stack>
@@ -268,7 +281,7 @@ SoundEntryEditor.propTypes = {
     onAccordionClick: PropTypes.func.isRequired,
     onPlaySound: PropTypes.func,
     checkEntryExists: PropTypes.func,
-    id: PropTypes.string.isRequired,
+    entry: PropTypes.string.isRequired,
     editable: PropTypes.bool,
     isOpen: PropTypes.bool,
     errorWhenPlaySound: PropTypes.any,

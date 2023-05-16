@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(0);
+
 function err_4xx($code, $message) {
     header("HTTP/1.0 $code $message");
     exit(0);
@@ -15,15 +17,36 @@ if (!isset($parsed_url['scheme']) || $parsed_url['scheme'] !== 'https') {
     err_4xx(400, 'Bad Request');
 }
 
+// CORS check.
 $server_host = null;
 if (isset($_SERVER['HTTP_HOST'])) {
-    $server_host = $_SERVER['HTTP_HOST'];
+    $server_host = parse_url($_SERVER['HTTP_HOST']);
 } elseif (isset($_SERVER['HTTPS_HOST'])) {
-    $server_host = $_SERVER['HTTPS_HOST'];
+    $server_host = parse_url($_SERVER['HTTPS_HOST']);
+}
+if (!$server_host) {
+    err_4xx(403, 'Forbidden');
 }
 $server_referer = (isset($_SERVER['HTTP_REFERER'])) ? parse_url($_SERVER['HTTP_REFERER']) : array();
-if (!$server_host || !isset($server_referer['host']) || $server_host !== $server_referer['host']) {
-    // CORS check.
+if (!isset($server_host['scheme'])) {
+    $server_host['scheme'] = 'http';
+}
+if (!isset($server_referer['scheme'])) {
+    $server_referer['scheme'] = 'http';
+}
+if (!isset($server_host['host'])) {
+    $server_host['host'] = $server_host['path'];
+}
+if (!isset($server_host['port'])) {
+    $server_host['port'] = '80';
+}
+if (!isset($server_referer['port'])) {
+    $server_referer['port'] = '80';
+}
+$scheme_check = $server_host['scheme'] === $server_referer['scheme'];
+$host_check = isset($server_referer['host']) && $server_host['host'] === $server_referer['host'];
+$port_check = $server_host['port'] === $server_referer['port'];
+if (!($scheme_check && $host_check && $port_check)) {
     err_4xx(403, 'Forbidden');
 }
 

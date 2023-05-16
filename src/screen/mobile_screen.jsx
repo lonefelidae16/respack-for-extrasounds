@@ -7,10 +7,11 @@ import { Button } from '@mui/material';
 
 import Caution from '../icons/caution.jsx';
 
+import packageJson from '../../package.json';
+
 /**
  * @param {{
  *      hidden: boolean,
- *      name: string,
  *      onContinueButtonPress: () => void,
  * }} props
  */
@@ -19,7 +20,7 @@ const MobileScreen = (props) => {
 
     return (props.hidden) ? null : (
         <main className='center'>
-            <h2 className='minecraft'>{props.name}</h2>
+            <h2 className='minecraft'>{packageJson.description}</h2>
             <p><Caution /> {t('CAUTION')} <Caution /></p>
             <p>{t('Consider using the Desktop browser.')}</p>
             <p>{t('This app is not designed for Mobile or Tablet devices.')}</p>
@@ -31,7 +32,6 @@ const MobileScreen = (props) => {
 MobileScreen.propTypes = {
     hidden: PropTypes.bool,
     onContinueButtonPress: PropTypes.func,
-    name: PropTypes.string,
 };
 
 export default MobileScreen;

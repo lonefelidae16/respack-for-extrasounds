@@ -14,6 +14,12 @@ import SimpleBoxAnimator from '../components/simple_box_animator.jsx';
 import SimpleDialog from '../components/simple_dialog.jsx';
 import SoundEntryVisualizer from '../components/sound_entry_visualizer.jsx';
 
+const dropAreaDOMSelector = '.edit-json-editor [data-rbd-droppable-id=res-pack]';
+const dropSourceId = 'extra-sounds';
+const dropDestinationId = 'res-pack';
+const dragCssClassName = 'dragging';
+const dragCssErrorClassName = 'error';
+
 const EditScreen = forwardRef(
     /**
      * @param {{
@@ -171,7 +177,7 @@ const EditScreen = forwardRef(
          *
          * @param {string} esVer
          */
-        const onRetargetDlgClose = (esVer) => {
+        const onRetargetDlgClose = async (esVer) => {
             setRetargetDlgOpen(false);
             if (!esVer || extraSoundsVer === esVer) {
                 return;
@@ -185,7 +191,7 @@ const EditScreen = forwardRef(
                 // Update pack_format.
                 resPack.setPackFormatFromMCVer(mcVersion);
                 // Obtain sounds.json by version.
-                (async () => await updateJsonFromVersion(resPack, esVer))();
+                await updateJsonFromVersion(resPack, esVer);
                 // TODO: Check missing sound entry when pack_format downgraded
             } catch (error) {
                 setSomeError(<>Failed to retarget ResourcePack. Reason: &ldquo;{error.message}&rdquo;</>);
@@ -194,13 +200,8 @@ const EditScreen = forwardRef(
             }
         };
 
-        const dropSourceId = 'extra-sounds';
-        const dropDestinationId = 'res-pack';
-        const dragCssClassName = 'dragging';
-        const dragCssErrorClassName = 'error';
-
         const handleDragStart = (component) => {
-            const dropAreaDOM = document.querySelector('.edit-json-editor [data-rbd-droppable-id=res-pack]');
+            const dropAreaDOM = document.querySelector(dropAreaDOMSelector);
             dropAreaDOM.classList.add(dragCssClassName);
             if (resPack.soundsJson[component['draggableId']]) {
                 dropAreaDOM.classList.add(dragCssErrorClassName);
@@ -208,10 +209,7 @@ const EditScreen = forwardRef(
         };
 
         const handleDrop = (result) => {
-            document.querySelector('.edit-json-editor [data-rbd-droppable-id=res-pack]').classList.remove(dragCssClassName, dragCssErrorClassName);
-            if (!resPack) {
-                return;
-            }
+            document.querySelector(dropAreaDOMSelector).classList.remove(dragCssClassName, dragCssErrorClassName);
             if (!result['destination'] || result['destination']['droppableId'] !== dropDestinationId) {
                 return;
             }
@@ -371,7 +369,7 @@ const EditScreen = forwardRef(
                                     <TextField
                                         label='Minecraft'
                                         id='mc-ver'
-                                        value={ resPack ? resPack.getMCVerFromPackFormat() : '' }
+                                        value={ resPack.getMCVerFromPackFormat() }
                                         size='small'
                                         variant='standard'
                                         disabled
@@ -380,7 +378,7 @@ const EditScreen = forwardRef(
                                     <TextField
                                         label={ t('Format') }
                                         id='pack-format-num'
-                                        value={ resPack ? resPack.getPackFormat() : '' }
+                                        value={ resPack.getPackFormat() }
                                         size='small'
                                         variant='standard'
                                         disabled
@@ -404,7 +402,7 @@ const EditScreen = forwardRef(
                                         draggable
                                     />
                                     <SoundEntryVisualizer
-                                        objects={ resPack ? resPack.soundsJson : {} }
+                                        objects={ resPack.soundsJson }
                                         onItemClick={ handleEditableItemClick }
                                         onItemDelete={ handleEditableItemDelete }
                                         onItemNameChange={ handleEditableItemNameChange }
