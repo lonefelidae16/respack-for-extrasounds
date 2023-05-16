@@ -32,6 +32,10 @@
     "Execute": "実行",
     "Cancel": "キャンセル",
 
+    "Search Entries": "エントリを検索",
+    "Click to add a new entry.": "クリックして新しいエントリを追加します。",
+    "This field is required.": "項目に入力が必要です。",
+
     "Entry": "エントリ",
     "This name is already exists.": "このエントリ名はすでに使われています。",
     "Edit the Entry name:": "エントリ名を変更:",

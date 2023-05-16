@@ -32,8 +32,8 @@ const SoundEntryEditor = (props) => {
     const [entryNameEmpty, setEntryNameEmpty] = useState(false);
     const [playing, setPlaying] = useState(false);
     const [soundName, setSoundName] = useState(sounds.map(entry => ((typeof entry) === 'string') ? entry : entry['name']));
-    const [volume, setVolume] = useState(sounds.map(entry => (entry['volume'] ? entry['volume'] : 1)));
-    const [pitch, setPitch] = useState(sounds.map(entry => (entry['pitch'] ? entry['pitch'] : 1)));
+    const [volume, setVolume] = useState(sounds.map(entry => entry['volume'] ?? 1));
+    const [pitch, setPitch] = useState(sounds.map(entry => entry['pitch'] ?? 1));
     const [isEvent, setEvent] = useState(sounds.map(entry => entry['type'] === 'event'));
 
     const handleListItemClick = (entryName) => {
@@ -142,7 +142,7 @@ const SoundEntryEditor = (props) => {
     return (
         <Accordion expanded={ isOpen }>
             <AccordionSummary onClick={ () => handleListItemClick(entry) }>
-                <div style={ { display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' } }>
+                <div className={ `${classPrefix}-accordion-wrapper` }>
                     <div hidden={ !editable } className={ `${classPrefix}-edit-entry` }>
                         <Tooltip title={ `${t('Edit the Entry name:')} "${entry}"` } arrow>
                             <IconButton onClick={ (ev) => {
@@ -153,7 +153,7 @@ const SoundEntryEditor = (props) => {
                             </IconButton>
                         </Tooltip>
                     </div>
-                    <div style={ { flexGrow: 1 } } className={ `${classPrefix}-entry-name` }>
+                    <div className={ `${classPrefix}-entry-name` }>
                         <Typography hidden={ entryNameEditorShow && editingEntryName === entry }>{entry}</Typography>
                         <div hidden={ !(entryNameEditorShow && editingEntryName === entry) }>
                             <TextField
@@ -238,7 +238,7 @@ const SoundEntryEditor = (props) => {
                         <Stack>
                             <small>{t('Weight')}</small>
                             <Slider
-                                value={ soundEntry['weight'] ? soundEntry['weight'] : 1 }
+                                value={ soundEntry['weight'] ?? 1 }
                                 size='small'
                                 valueLabelDisplay='auto'
                                 min={ 1 }

@@ -21,8 +21,8 @@ const SimpleDialog = (props) => {
     const { title, values, onClose, selectedValue, isOpen, cancelString, okString } = props;
     /** @type {[string, React.Dispatch<string>]} */
     const [currentValue, setCurrentValue] = useState(selectedValue);
-    const cancelStr = (cancelString) ? cancelString : t('Cancel');
-    const okStr = (okString) ? okString : t('OK');
+    const cancelStr = cancelString ?? t('Cancel');
+    const okStr = okString ?? t('OK');
 
     const handleCancel = () => {
         onClose(null);

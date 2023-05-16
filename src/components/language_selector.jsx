@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 const LanguageSelector = () => {
     const [cookies, setCookie] = useCookies([cookieKey]);
     /** @type {[string, React.Dispatch<string>]} */
-    const [lang, setLang] = useState((cookies[cookieKey] ? cookies[cookieKey] : i18n.language));
+    const [lang, setLang] = useState((cookies[cookieKey] ?? i18n.language));
 
     const { t } = useTranslation();
 

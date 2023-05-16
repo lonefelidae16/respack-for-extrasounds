@@ -1,0 +1,12 @@
+@charset 'UTF-8';
+
+.sound-entry-editor-accordion-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .sound-entry-editor-entry-name {
+        flex-grow: 1;
+    }
+}

@@ -1,0 +1,23 @@
+@charset 'UTF-8';
+
+.sound-entry-visualizer-title {
+    font-size: x-large;
+    text-align: center;
+}
+
+.sound-entry-visualizer-control-box {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+
+    .sound-entry-visualizer-search-bar {
+        width: 75%;
+    }
+
+    // .sound-entry-visualizer-control-editable {
+    //     margin: 0 0 0 auto;
+    // }
+}

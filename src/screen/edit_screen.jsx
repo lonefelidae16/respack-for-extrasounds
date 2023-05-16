@@ -289,6 +289,14 @@ const EditScreen = forwardRef(
             }
         };
 
+        const handleAddItem = (entryName) => {
+            const newJson = { ...resSoundsJson };
+            newJson[entryName] = {
+                'sounds': [''],
+            };
+            setResSoundsJson(newJson);
+        };
+
         /**
          *
          * @param {string} entryName
@@ -313,8 +321,8 @@ const EditScreen = forwardRef(
                     if ((typeof pickedEntry) === 'string') {
                         fileName = pickedEntry;
                     } else if (pickedEntry['type'] === 'event') {
-                        const entryVolume = (pickedEntry['volume']) ? pickedEntry['volume'] : 1;
-                        const entryPitch = (pickedEntry['pitch']) ? pickedEntry['pitch'] : 1;
+                        const entryVolume = pickedEntry['volume'] ?? 1;
+                        const entryPitch = pickedEntry['pitch'] ?? 1;
                         return handlePlaySound(pickedEntry['name'], volume * entryVolume, pitch * entryPitch, true);
                     } else {
                         fileName = pickedEntry['name'];
@@ -397,7 +405,7 @@ const EditScreen = forwardRef(
                             <div className='edit-json-editor'>
                                 <DragDropContext onDragStart={ handleDragStart } onDragEnd={ handleDrop }>
                                     <SoundEntryVisualizer
-                                        objects={ modSoundsJson['extrasounds'] ? modSoundsJson['extrasounds'] : {} }
+                                        objects={ modSoundsJson['extrasounds'] ?? {} }
                                         onItemClick={ handleSourceItemClick }
                                         title='ExtraSounds'
                                         id={ dropSourceId }
@@ -409,6 +417,7 @@ const EditScreen = forwardRef(
                                         onItemDelete={ handleEditableItemDelete }
                                         onItemNameChange={ handleEditableItemNameChange }
                                         onItemValueChange={ handleEditableValueChange }
+                                        onItemAdd={ handleAddItem }
                                         onPlaySound={ handlePlaySound }
                                         checkEntryExists={ handleCheckEntryName }
                                         errorWhenPlaySound={ errorWhenPlaySound }
