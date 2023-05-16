@@ -9,13 +9,7 @@
 const curlFetch = async (url) => {
     let baseUri = `${location.protocol}//${location.host}${location.pathname}`;
     baseUri = baseUri.substring(0, baseUri.lastIndexOf('/'));
-    return fetch(`${baseUri}/backend/curl.php`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `url=${url}`,
-    });
+    return fetch(`${baseUri}/backend/curl.php?url=${encodeURI(url)}`);
 };
 
 export { curlFetch };

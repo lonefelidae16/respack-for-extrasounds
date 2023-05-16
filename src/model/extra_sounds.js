@@ -62,7 +62,7 @@ export default class ExtraSounds {
                         mcVer = tagName.match(MCVerRegex['withoutPatch']);
                     }
                     if (!mcVer) {
-                        return [];
+                        return;
                     }
                     elem['minecraft_version'] = mcVer[0];
                     this.revisions.push(elem);

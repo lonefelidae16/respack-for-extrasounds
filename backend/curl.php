@@ -7,10 +7,10 @@ function err_4xx($code, $message) {
     exit(0);
 }
 
-if (!isset($_POST['url'])) {
+if (!isset($_GET['url'])) {
     err_4xx(400, 'Bad Request');
 }
-$url = filter_var($_POST['url'], FILTER_SANITIZE_URL);
+$url = filter_var($_GET['url'], FILTER_SANITIZE_URL);
 $parsed_url = parse_url($url);
 if (!isset($parsed_url['scheme']) || $parsed_url['scheme'] !== 'https') {
     // Allow only HTTPS scheme.
