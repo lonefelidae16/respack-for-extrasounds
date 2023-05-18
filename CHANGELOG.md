@@ -5,12 +5,39 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### ⏳ Coming
 
-* Add a new entry to `sounds.json` and name it.
-* Autocomplete feature that suggests the names of items as you type, including autogen entries by ExtraSounds.
+* Zip file-tree customization feature such as can be added an ogg sound file.
+* Supports custom namespace.
 
 ### 🐛 Bugs
 
-* <small>_Any bugs/issues will be written here when found._</small>
+<!--* <small>_Any bugs/issues will be written here when found._</small>-->
+* Retarget ResourcePack feature is still work in progress.
+
+## [0.2.0-indev] - 2023-05-18 JST
+### ✨ Added
+
+* Autocomplete feature for EntryName which autogen by ExtraSounds.
+* Autocomplete feature for SoundName input.
+* Search entries feature of `sounds.json`.<br>
+  Needs to be filtered due to rendering issue.
+* Add a new entry to `sounds.json` and name it.
+* Add a new sound to entry.
+* Displays slider label of Volume and Pitch during sound editing.
+
+### 🔧 Fixed
+
+* Confirmation dialog now displays only when ResourcePack structure has been changed.
+* Missing translations on EditScreen.
+* Disallow to register an empty entry name to `sounds.json`.
+* CORS check fix in `curl.php`.
+* Now uses `structedClone` instead of shallow copy when modifying `sounds.json`.
+
+### 👷 Technical
+
+* Optimize ResourcePack handling:<br>
+  Whole object copy including `zip`, `pack.mcmeta` and `sounds.json` -> copy `sounds.json` only.
+* Adopt Null coalescing operator (`operand ?? defaultValue`).
+* Reduce states from `React.Component`.
 
 ## [0.1.1-indev] - 2023-05-16 JST
 ### ✨ Added
