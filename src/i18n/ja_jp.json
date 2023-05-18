@@ -31,6 +31,8 @@
     "Retarget ResourcePack": "リソースパック バージョンを変更",
     "Execute": "実行",
     "Cancel": "キャンセル",
+    "Failed to retarget ResourcePack.": "パックバージョンの変更に失敗しました。",
+    "Reason:": "詳細:",
 
     "Search Entries": "エントリを検索",
     "Click to add a new entry.": "クリックして新しいエントリを追加します。",
@@ -39,8 +41,9 @@
     "This field is required.": "項目に入力が必要です。",
 
     "This name is already exists.": "このエントリ名はすでに使われています。",
-    "Edit the Entry name:": "エントリ名を変更:",
-    "Remove this Entry": "このエントリを削除",
+    "Entry": "エントリ",
+    "Edit Entry name:": "エントリ名を変更:",
+    "Remove this Entry.": "このエントリを削除します。",
     "Sound Name": "サウンド名",
     "Volume": "ボリューム",
     "Pitch": "ピッチ",
@@ -50,6 +53,8 @@
     "An error occurred...": "エラーが発生しました",
     "Play this sound.": "このサウンドを再生します。",
     "The result may be different in game.": "Minecraft で実際に聞こえる音と違うものになるかもしれません。",
+    "Click to add sound.": "クリックして新しいサウンドを追加します。",
+    "Remove this sound.": "このサウンドを削除します。",
 
     "Localization feature is currently under development.": "翻訳機能の実用化まで今しばらくお待ちください"
 }

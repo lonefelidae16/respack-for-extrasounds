@@ -58,4 +58,22 @@ export default class MinecraftAssets {
             .then(response => response.json())
             .catch(() => new Object());
     }
+
+    /**
+     *
+     * @param {object} base
+     * @param {...any} merger
+     */
+    static async mergeSoundsJson(base, ...merger) {
+        merger.forEach(json => {
+            Object.keys(json).forEach(key => {
+                if (base[key] === undefined || json[key]['replace'] === true) {
+                    base[key] = json[key];
+                } else {
+                    base[key]['sounds'].concat(json[key]['sounds']);
+                }
+            });
+        });
+        return base;
+    }
 }

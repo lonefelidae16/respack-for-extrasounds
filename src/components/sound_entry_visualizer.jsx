@@ -5,12 +5,14 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { Box, IconButton, List, ListItemButton, ListItemText, TextField, Tooltip } from '@mui/material';
+import { AddBox, Clear } from '@mui/icons-material';
 
 import SoundEntryEditor from './sound_entry_editor.jsx';
 
 import FileJson from '../icons/file_json.jsx';
-import { AddBox, Clear } from '@mui/icons-material';
 import InputDialog from './input_dialog.jsx';
+
+import Arrays from '../util/arrays.js';
 
 const classNamePrefix = 'sound-entry-visualizer';
 
@@ -18,7 +20,7 @@ const classNamePrefix = 'sound-entry-visualizer';
  * @param {{
  *      objects: object,
  *      onItemClick: (value: string) => void,
- *      onItemAdd: (value: string) => void,
+ *      onEntryAdd: (value: string) => void,
  *      checkEntryExists: (value: string) => boolean,
  *      title: string,
  *      id: string,
@@ -28,7 +30,7 @@ const classNamePrefix = 'sound-entry-visualizer';
  */
 const SoundEntryVisualizer = (props) => {
     const { t } = useTranslation();
-    const { objects, onItemClick, onItemAdd, checkEntryExists, title, id, draggable, editable } = props;
+    const { objects, onItemClick, onEntryAdd, checkEntryExists, title, id, draggable, editable } = props;
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [openedAccordion, setOpenedAccordion] = useState(false);
     const [isOenedNewEntryDialog, setOpenedNewEntryDialog] = useState(false);
@@ -37,6 +39,10 @@ const SoundEntryVisualizer = (props) => {
 
     const handleListItemClick = (entryName) => {
         onItemClick(entryName);
+    };
+
+    const handleSearchFilterSuggest = (filter) => {
+        setSearchFilter(filter);
     };
 
     const handleAccordionClick = (entryName) => {
@@ -55,20 +61,38 @@ const SoundEntryVisualizer = (props) => {
     };
 
     const handleDialogOpen = () => {
-        if (onItemAdd) {
+        if (onEntryAdd) {
             setOpenedNewEntryDialog(true);
         }
     };
 
     const handleAddEntry = (entryName) => {
         setOpenedNewEntryDialog(false);
-        if (entryName && onItemAdd) {
-            onItemAdd(entryName);
+        if (entryName && onEntryAdd) {
+            onEntryAdd(entryName);
         }
     };
 
     const objectRenderer = () => {
-        const targets = Object.keys(objects).filter(value => (searchFilter) ? value.includes(searchFilter) : value);
+        const targets = Object.keys(objects).filter(value => (searchFilter) ? value.startsWith(searchFilter) : value);
+        const inputSeq = searchFilter.split('.').length - 1;
+        const elements = Arrays.sortedUnique(
+            targets.filter(key => key.split('.')[inputSeq])
+                .map(key => key.split('.').slice(0, inputSeq + 1).join('.'))
+        );
+
+        if (targets.length > 20) {
+            /*
+            action...
+            hotbar...
+            item...
+            item.pickup...
+            */
+            return elements.map(elem => (
+                <ListItemButton sx={ { color: 'khaki' } } key={ elem } onClick={ () => handleSearchFilterSuggest(targets.includes(elem) ? elem : `${elem}.`) }>{elem}...</ListItemButton>
+            ));
+        }
+
         return targets.map((key, index) =>
             draggable ? (
                 <Draggable key={ key } draggableId={ key } index={ index }>
@@ -86,12 +110,12 @@ const SoundEntryVisualizer = (props) => {
                 </Draggable>
             ) : (
                 <SoundEntryEditor
+                    { ...props }
                     key={ key }
                     entry={ key }
                     sounds={ objects[key]['sounds'] }
                     onAccordionClick={ handleAccordionClick }
                     isOpen={ openedAccordion === key }
-                    { ...props }
                 />
             ));
     };
@@ -128,7 +152,7 @@ const SoundEntryVisualizer = (props) => {
             <Droppable droppableId={ id }>
                 {providedDroppable => (
                     <List
-                        sx={ { pt: 0, overflow: 'hidden', overflowY: 'auto' } }
+                        sx={ { height: '100%', pt: 0, overflow: 'hidden', overflowY: 'auto' } }
                         ref={ providedDroppable.innerRef }
                         { ...providedDroppable.droppableProps }
                     >
@@ -156,7 +180,7 @@ const SoundEntryVisualizer = (props) => {
 SoundEntryVisualizer.propTypes = {
     objects: PropTypes.object.isRequired,
     onItemClick: PropTypes.func.isRequired,
-    onItemAdd: PropTypes.func,
+    onEntryAdd: PropTypes.func,
     checkEntryExists: PropTypes.func,
     title: PropTypes.string,
     id: PropTypes.string.isRequired,

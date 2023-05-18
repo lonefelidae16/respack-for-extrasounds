@@ -43,7 +43,8 @@
         "react-beautiful-dnd": "^13.1.1",
         "react-cookie": "^4.1.1",
         "react-dom": "^18.2.0",
-        "react-i18next": "^12.2.2"
+        "react-i18next": "^12.2.2",
+        "react-window": "^1.8.9"
     },
     "devDependencies": {
         "@babel/core": "^7.21.8",

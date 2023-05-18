@@ -102,6 +102,10 @@ module.exports = {
                     from: Path.resolve(__dirname, 'backend'),
                     to: Path.resolve(__dirname, 'dist/backend'),
                 },
+                {
+                    from: Path.resolve(__dirname, 'generated'),
+                    to: Path.resolve(__dirname, 'dist/generated'),
+                },
             ],
         }),
     ],

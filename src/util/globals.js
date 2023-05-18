@@ -9,6 +9,8 @@ class StateHandler {
     static #resourcePack = undefined;
     /** @type {string} */
     static #extraSoundsVer;
+    /** @type {string} */
+    static #minecraftVer;
     /** @type {{ objects: {} }} */
     static #vanillaAssetsJson = {};
     /** @type {string[]} */
@@ -37,55 +39,50 @@ class StateHandler {
         this.#vanillaSoundsJson = {};
         this.#modSoundsJson = {};
         this.#extraSoundsVer = '';
+        this.#minecraftVer = '';
     }
 
     static async refreshJsonAsync() {
-        const mcVer = this.#resourcePack.getMCVerFromPackFormat();
+        this.#minecraftVer = this.#resourcePack.getMCVerFromPackFormat();
         const tasks = [];
         tasks.push((async () => {
-            await MinecraftAssets.getMCAssetsJsonAsync(mcVer)
+            await MinecraftAssets.getMCAssetsJsonAsync(this.#minecraftVer)
                 .then(json => {
                     this.#vanillaAssetsJson = json;
                 });
         })());
         tasks.push((async () => {
-            await MinecraftAssets.getMCSoundsJsonAsync(mcVer)
+            await MinecraftAssets.getMCSoundsJsonAsync(this.#minecraftVer)
                 .then(json => {
                     this.#vanillaSoundsJson = json;
                 });
         })());
         tasks.push((async () => {
-            await ExtraSounds.fetchSoundsJsonAsync(this.#extraSoundsVer).then(json => {
-                this.#modSoundsJson.extrasounds = json;
+            const autoGen = await ExtraSounds.fetchAutoGenSoundsJsonAsync(this.#minecraftVer);
+            const soundsJson = await ExtraSounds.fetchSoundsJsonAsync(this.#extraSoundsVer);
+            await MinecraftAssets.mergeSoundsJson(autoGen, soundsJson).then(json => {
+                this.#modSoundsJson['extrasounds'] = json;
             });
         })());
 
         return Promise.all(tasks).then(() => {
-            const esSoundNames = Object.keys(this.#modSoundsJson.extrasounds)
+            const esSoundNames = Object.keys(this.#modSoundsJson['extrasounds'])
                 .map(value => `extrasounds:${value}`);
-            const esSoundEntries = Object.keys(this.#modSoundsJson.extrasounds);
             const mcSoundNames = Object.keys(this.#vanillaSoundsJson)
+                .filter(value => !value.startsWith('minecraft/sounds/music/'))
                 .map(value => 'minecraft:'.concat(value));
-            const esAutoGenBlockSounds = ExtraSounds.generateSoundPackName(this.#vanillaSoundsJson);
-            // TODO: complete autogen sounds json
-            const esAutoGenBlockSoundsJson = Object.fromEntries(esAutoGenBlockSounds.map(value => {
-                return [value, { 'sounds': [] }];
-            }));
-            const esAutoGenWithNamespace = esAutoGenBlockSounds.map(value => `extrasounds:${value}`);
             const mcSoundFiles = Object.keys(this.#vanillaAssetsJson['objects'])
                 .filter(value => value.endsWith('.ogg'))
+                .filter(value => !value.startsWith('music.') && !value.startsWith('music_disc.'))
                 .map(value => value.replace('minecraft/sounds/', 'minecraft:').replace('.ogg', ''));
 
-            this.#allSoundNameList = Arrays.sortedUnique(
+            this.#allSoundNameList = Arrays.sortedUnique([
                 ...esSoundNames,
                 ...mcSoundNames,
-                ...esAutoGenWithNamespace,
                 ...mcSoundFiles,
-            );
-            this.#extraSoundsEntryList = Arrays.sortedUnique(
-                ...esSoundEntries,
-                ...esAutoGenBlockSounds,
-            );
+            ]);
+            this.#extraSoundsEntryList = Object.keys(this.#modSoundsJson['extrasounds'])
+                .sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
         });
     }
 
@@ -106,7 +103,7 @@ class StateHandler {
     /**
      * @param {string} extraSoundsVer Target ExtraSounds' version
      */
-    static async reTartgetPack(extraSoundsVer) {
+    static async retartgetPack(extraSoundsVer) {
         // Change ExtraSounds version.
         this.#extraSoundsVer = extraSoundsVer;
         // Retrieve compatible Minecraft version of ExtraSounds.
@@ -162,55 +159,63 @@ class StateHandler {
     static async playSoundAsync(entryName, volume, pitch, isEvent) {
         let fileName = undefined, namespace = 'minecraft', path = undefined;
         const isVanilla = entryName.startsWith('minecraft:') || !(entryName.includes(':'));
-        try {
-            if (isEvent) {
-                let entryNamespace = undefined;
-                if (entryName.includes(':')) {
-                    [entryNamespace, entryName] = entryName.split(':');
-                }
-                /** @type {{name: string, volume: number, pitch: number, weight: number, type: string}[] | string[]} */
-                let entries;
-                if (isVanilla) {
-                    entries = this.#vanillaSoundsJson[entryName]['sounds'];
-                } else if (entryNamespace === 'extrasounds' && !this.#modSoundsJson[entryNamespace][entryName]) {
-                    entries = ExtraSounds.getVanillaSoundEntry(entryName);
-                } else {
-                    entries = this.#modSoundsJson[entryNamespace][entryName]['sounds'];
-                }
-                const pickedEntry = entries[Math.floor(Math.random() * entries.length)];
-                if ((typeof pickedEntry) === 'string') {
-                    fileName = pickedEntry;
-                } else if (pickedEntry['type'] === 'event') {
-                    const entryVolume = pickedEntry['volume'] ?? 1;
-                    const entryPitch = pickedEntry['pitch'] ?? 1;
-                    return this.playSoundAsync(pickedEntry['name'], volume * entryVolume, pitch * entryPitch, true);
-                } else {
-                    fileName = pickedEntry['name'];
-                    if (pickedEntry['volume']) {
-                        volume *= pickedEntry['volume'];
-                    }
-                    if (pickedEntry['pitch']) {
-                        pitch *= pickedEntry['pitch'];
-                    }
-                }
-            } else {
-                fileName = entryName;
+        if (isEvent) {
+            let entryNamespace = undefined;
+            if (entryName.includes(':')) {
+                [entryNamespace, entryName] = entryName.split(':');
             }
+            /** @type {{name: string, volume: number, pitch: number, weight: number, type: string}[] | string[]} */
+            const entries = (isVanilla) ?
+                this.#vanillaSoundsJson[entryName]['sounds'] :
+                this.#modSoundsJson[entryNamespace][entryName]['sounds'];
+            const pickedEntry = entries[Math.floor(Math.random() * entries.length)];
+            if ((typeof pickedEntry) === 'string') {
+                fileName = pickedEntry;
+            } else if (pickedEntry['type'] === 'event') {
+                const entryVolume = pickedEntry['volume'] ?? 1;
+                const entryPitch = pickedEntry['pitch'] ?? 1;
+                return this.playSoundAsync(pickedEntry['name'], volume * entryVolume, pitch * entryPitch, true);
+            } else {
+                fileName = pickedEntry['name'];
+                if (pickedEntry['volume']) {
+                    volume *= pickedEntry['volume'];
+                }
+                if (pickedEntry['pitch']) {
+                    pitch *= pickedEntry['pitch'];
+                }
+            }
+        } else {
+            fileName = entryName;
+        }
 
-            if (fileName.includes(':')) {
-                [namespace, path] = fileName.split(':');
-            } else {
-                path = fileName;
-            }
-            fileName = `${namespace}/sounds/${path}.ogg`;
+        if (fileName.includes(':')) {
+            [namespace, path] = fileName.split(':');
+        } else {
+            path = fileName;
+        }
+        fileName = `${namespace}/sounds/${path}.ogg`;
 
-            if (fileName in this.#vanillaAssetsJson['objects']) {
-                return this.playVanillaAssetAsync(fileName, volume, pitch);
-            } else {
-                return this.playBlobInZipAsync(`assets/${fileName}`, volume, pitch);
-            }
-        } catch {
-            return undefined;
+        if (fileName in this.#vanillaAssetsJson['objects']) {
+            return this.playVanillaAssetAsync(fileName, volume, pitch);
+        } else {
+            return this.playBlobInZipAsync(`assets/${fileName}`, volume, pitch);
+        }
+    }
+
+    /**
+     *
+     * @param {string} name
+     * @returns {boolean}
+     */
+    static isEventSoundName(name) {
+        let namespace = 'minecraft', path = name;
+        if (name.includes(':')) {
+            [namespace, path] = name.split(':');
+        }
+        if (namespace === 'minecraft') {
+            return this.#vanillaAssetsJson['objects'][`minecraft/sounds/${path}.ogg`] === undefined;
+        } else {
+            return this.#resourcePack.zip.file(`assets/${namespace}/sounds/${path}.ogg`) === null;
         }
     }
 

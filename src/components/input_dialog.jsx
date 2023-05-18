@@ -13,7 +13,6 @@ import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from '@mui
  *      value: string,
  *      label: string,
  *      helperText: string,
- *      autoCompleteSelection: string[],
  *      onChange: (value: string) => void,
  *      onClose: (result: string | null) => void,
  *      isError: boolean,
@@ -25,7 +24,7 @@ import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from '@mui
  * }} props
  */
 const InputDialog = (props) => {
-    const { title, desc, value, label, helperText, autoCompleteSelection, onChange, onClose,
+    const { title, desc, value, label, helperText, onChange, onClose,
         isError, isOpen, required, variant, cancelString, okString } = props;
     const { t } = useTranslation();
     const [currentValue, setCurrentValue] = useState(value);
@@ -62,9 +61,6 @@ const InputDialog = (props) => {
      * @param {React.KeyboardEvent} ev
      */
     const handleKeyDown = (ev) => {
-        if (ev.key.match(/enter/i)) {
-            handleOk();
-        }
         if (ev.key.match(/escape/i)) {
             handleCancel();
         }
@@ -102,7 +98,6 @@ InputDialog.propTypes = {
     label: PropTypes.string,
     helperText: PropTypes.string,
     variant: PropTypes.string,
-    autoCompleteSelection: PropTypes.array,
     onChange: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     isError: PropTypes.bool,

@@ -76,8 +76,7 @@ const App = () => {
             .then(() => {
                 setInitialSoundsJson(currentPack.soundsJson);
                 setCurrentScreen('EditScreen');
-            }).catch((error) => {
-                console.error(error);
+            }).catch(() => {
                 setSomeError(<>{t('Failed to connect the Official Minecraft server.')} <a href='#' onClick={ () => location.reload() }>{t('Try to reload this page?')}</a></>);
             }).finally(() => {
                 setMayBusyWait(false);

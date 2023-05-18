@@ -130,4 +130,11 @@ export default class ExtraSounds {
         });
         return esVer;
     }
+
+    static async fetchAutoGenSoundsJsonAsync(mcVer) {
+        let baseUri = `${location.protocol}//${location.host}${location.pathname}`;
+        baseUri = baseUri.substring(0, baseUri.lastIndexOf('/'));
+        return fetch(`${baseUri}/generated/${mcVer}.json`)
+            .then(response => response.json());
+    }
 }

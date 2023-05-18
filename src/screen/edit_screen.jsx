@@ -44,25 +44,22 @@ const EditScreen = (props) => {
     const [retargetDlgOpen, setRetargetDlgOpen] = useState(false);
     /** @type {[React.JSX.Element, React.Dispatch<React.JSX.Element>]} */
     const [someError, setSomeError] = useState(null);
-    /** @type {[number | false, React.Dispatch<number | false>]} */
-    const [errorWhenPlaySound, setErrorWhenPlaySound] = useState(false);
 
     const { t } = useTranslation();
 
     useEffect(() => {
         const currentPack = StateHandler.getResourcePack();
-        const isPackChanged = (currentPack && currentPack.soundsJson) !== resSoundsJson;
-        if (isPackChanged) {
+        if (!currentPack) {
+            return;
+        }
+        if (currentPack.soundsJson !== resSoundsJson) {
             registerUnloadConfirmation();
         }
     }, [resSoundsJson]);
 
-    const handlePlaySoundError = () => {
-        if (errorWhenPlaySound) {
-            clearTimeout(errorWhenPlaySound);
-        }
-        setErrorWhenPlaySound(setTimeout(() => setErrorWhenPlaySound(false), 5000));
-    };
+    useEffect(() => {
+        setResSoundsJson(initialSoundsJson);
+    }, [initialSoundsJson]);
 
     const onPackRetargetClick = () => {
         setRetargetDlgOpen(true);
@@ -86,8 +83,8 @@ const EditScreen = (props) => {
             return;
         }
         onChangeWaitState(true);
-        StateHandler.reTartgetPack(esVer).catch((error) => {
-            setSomeError(<>Failed to retarget ResourcePack. Reason: &ldquo;{error.message}&rdquo;</>);
+        StateHandler.retartgetPack(esVer).catch((error) => {
+            setSomeError(<>{t('Failed to retarget ResourcePack.')} {t('Reason:')} &ldquo;{error.message}&rdquo;</>);
         }).finally(() => {
             onChangeWaitState(false);
         });
@@ -113,13 +110,14 @@ const EditScreen = (props) => {
      * @param {string} entryName
      */
     const handleSourceItemClick = (entryName) => {
-        const modSoundsJson = StateHandler.getModSoundsJson();
-        const targetEnry = modSoundsJson['extrasounds'][entryName];
-        if (!resSoundsJson[entryName] && targetEnry) {
-            const newJson = { ...resSoundsJson };
-            newJson[entryName] = targetEnry;
-            newJson[entryName]['replace'] = true;
-            setResSoundsJson(newJson);
+        const targetEntry = StateHandler.getModSoundsJson()['extrasounds'][entryName];
+        if (!resSoundsJson[entryName] && targetEntry) {
+            setResSoundsJson(current => {
+                const newJson = { ...current };
+                newJson[entryName] = structuredClone(targetEntry);
+                newJson[entryName]['replace'] = true;
+                return newJson;
+            });
         }
     };
 
@@ -130,19 +128,23 @@ const EditScreen = (props) => {
         if (!resSoundsJson[entryName]) {
             return;
         }
-        const newJson = { ...resSoundsJson };
-        delete newJson[entryName];
-        setResSoundsJson(newJson);
+        setResSoundsJson(current => {
+            const newJson = { ...current };
+            delete newJson[entryName];
+            return newJson;
+        });
     };
 
     const handleEditableItemNameChange = (before, after) => {
         if (!resSoundsJson[before] || before === after) {
             return;
         }
-        const newJson = { ...resSoundsJson };
-        newJson[after] = newJson[before];
-        delete newJson[before];
-        setResSoundsJson(newJson);
+        setResSoundsJson(current => {
+            const newJson = { ...current };
+            newJson[after] = newJson[before];
+            delete newJson[before];
+            return newJson;
+        });
     };
 
     /**
@@ -155,7 +157,7 @@ const EditScreen = (props) => {
 
     /**
      * @param {{
-     *      soundKey: string,
+     *      soundEntry: string,
      *      soundEntryIndex: number,
      *      property: string,
      *      value: any
@@ -163,37 +165,56 @@ const EditScreen = (props) => {
      */
     const handleEditableValueChange = (obj) => {
         try {
-            const { soundKey, soundEntryIndex, property, value } = obj;
-            if (value === null) {
-                delete resSoundsJson[soundKey]['sounds'][soundEntryIndex][property];
-            } else {
-                resSoundsJson[soundKey]['sounds'][soundEntryIndex][property] = value;
+            const { soundEntry, soundEntryIndex, property, value } = obj;
+            let target = resSoundsJson[soundEntry]['sounds'][soundEntryIndex];
+            if (typeof target === 'string') {
+                target = { 'name': target };
             }
-            registerUnloadConfirmation();
+            if (value === null) {
+                delete target[property];
+            } else {
+                target[property] = value;
+            }
+            setResSoundsJson(current => {
+                const newJson = { ...current };
+                newJson[soundEntry]['sounds'][soundEntryIndex] = target;
+                return newJson;
+            });
         } catch {
             // ignored statement.
             undefined;
         }
     };
 
-    const handleAddItem = (entryName) => {
-        const newJson = { ...resSoundsJson };
-        newJson[entryName] = {
-            'sounds': [''],
-        };
-        setResSoundsJson(newJson);
+    const handleAddEntry = (entryName) => {
+        setResSoundsJson(current => {
+            const newJson = { ...current };
+            newJson[entryName] = {
+                'sounds': [{ 'name': '' }],
+            };
+            return newJson;
+        });
     };
 
-    /**
-     *
-     * @param {string} entryName
-     * @param {number} volume
-     * @param {number} pitch
-     * @param {boolean} isEvent
-     */
-    const handlePlaySound = async (entryName, volume, pitch, isEvent) => {
-        return StateHandler.playSoundAsync(entryName, volume, pitch, isEvent).catch(() => {
-            handlePlaySoundError();
+    const handleAddSoundToEntry = (entryName) => {
+        if (!resSoundsJson[entryName]) {
+            return;
+        }
+        setResSoundsJson(current => {
+            const newJson = { ...current };
+            newJson[entryName]['sounds'].push({ 'name': '' });
+            return newJson;
+        });
+    };
+
+    const handleRemoveSoundFromEntry = (entryName, index) => {
+        if (!resSoundsJson[entryName] || !resSoundsJson[entryName]['sounds']) {
+            return;
+        }
+        setResSoundsJson(current => {
+            const newJson = { ...current };
+            delete newJson[entryName]['sounds'][index];
+            return newJson;
         });
     };
 
@@ -258,14 +279,15 @@ const EditScreen = (props) => {
                         />
                         <SoundEntryVisualizer
                             objects={ resSoundsJson }
+                            options={ StateHandler.getSoundNameList() }
                             onItemClick={ handleEditableItemClick }
                             onItemDelete={ handleEditableItemDelete }
                             onItemNameChange={ handleEditableItemNameChange }
                             onItemValueChange={ handleEditableValueChange }
-                            onItemAdd={ handleAddItem }
-                            onPlaySound={ handlePlaySound }
+                            onEntryAdd={ handleAddEntry }
+                            onSoundAddToEntry={ handleAddSoundToEntry }
+                            onSoundRemoveFromEntry={ handleRemoveSoundFromEntry }
                             checkEntryExists={ handleCheckEntryName }
-                            errorWhenPlaySound={ errorWhenPlaySound }
                             title={ t('ResourcePack') }
                             id={ dropDestinationId }
                             editable
