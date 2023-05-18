@@ -12,6 +12,7 @@ import MinecraftAssets from '../model/minecraft_assets.js';
 import SimpleBoxAnimator from '../components/simple_box_animator.jsx';
 import SimpleDialog from '../components/simple_dialog.jsx';
 import SoundEntryVisualizer from '../components/sound_entry_visualizer.jsx';
+import Arrays from '../util/arrays.js';
 
 const dropAreaDOMSelector = '.edit-json-editor [data-rbd-droppable-id=res-pack]';
 const dropSourceId = 'extra-sounds';
@@ -47,6 +48,10 @@ const EditScreen = forwardRef(
         const [vanillaSoundsJson, setVanillaSoundsJson] = useState({});
         /** @type {[{extrasounds: object}, React.Dispatch<object>]} */
         const [modSoundsJson, setModSoundsJson] = useState({});
+        /** @type {[array, React.Dispatch<array>]} */
+        const [allSoundNameList, setAllSoundNameList] = useState([]);
+        /** @type {[array, React.Dispatch<array>]} */
+        const [extraSoundsEntryList, setExtraSoundsEntryList] = useState([]);
         /** @type {[string, React.Dispatch<string>]} */
         const [extraSoundsVer, setExtraSoundsVer] = useState(ExtraSounds.defaultRef);
         const [retargetDlgOpen, setRetargetDlgOpen] = useState(false);
@@ -71,17 +76,51 @@ const EditScreen = forwardRef(
                 await MinecraftAssets.getMCAssetsJsonAsync(mcVer)
                     .then(json => {
                         setVanillaAssetJson(json);
+                        const availableSounds = Object.keys(json['objects'])
+                            .filter(value => value.endsWith('.ogg'))
+                            .map(value => value.replace('minecraft/sounds/', 'minecraft:').replace('.ogg', ''));
+                        setAllSoundNameList(current => {
+                            return Arrays.unique(...current, ...availableSounds)
+                                .sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+                        });
                     });
             })());
             tasks.push((async () => {
                 await MinecraftAssets.getMCSoundsJsonAsync(mcVer)
                     .then(json => {
                         setVanillaSoundsJson(json);
+                        const availableSounds = Object.keys(json)
+                            .map(value => 'minecraft:'.concat(value));
+                        setAllSoundNameList(current => {
+                            return Arrays.unique(...current, ...availableSounds)
+                                .sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+                        });
+                        const blockSounds = availableSounds
+                            .filter(value => value.startsWith('block.'))
+                            .flatMap(value => [
+                                `item.pickup.minecraft.${value}`,
+                                `item.place.minecraft.${value}`,
+                                `item.select.minecraft.${value}`
+                            ]);
+                        setExtraSoundsEntryList(current => {
+                            return Arrays.unique(...current, ...blockSounds)
+                                .sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+                        });
                     });
             })());
             tasks.push((async () => {
                 await ExtraSounds.fetchSoundsJsonAsync(extraSoundsVer).then(json => {
                     setModSoundsJson({ extrasounds: json });
+                    const availableSounds = Object.keys(json)
+                        .map(value => 'extrasounds:'.concat(value));
+                    setAllSoundNameList(current => {
+                        return Arrays.unique(...current, ...availableSounds)
+                            .sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+                    });
+                    setExtraSoundsEntryList(current => {
+                        return Arrays.unique(...current, ...Object.keys(json))
+                            .sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+                    });
                 });
             })());
             return Promise.all(tasks);
@@ -423,6 +462,8 @@ const EditScreen = forwardRef(
                                         errorWhenPlaySound={ errorWhenPlaySound }
                                         title={ t('ResourcePack') }
                                         id={ dropDestinationId }
+                                        allSoundNameList={ allSoundNameList }
+                                        extraSoundsEntryList={ extraSoundsEntryList }
                                         editable
                                     />
                                 </DragDropContext>

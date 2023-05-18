@@ -13,25 +13,27 @@ import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from '@mui
  *      value: string,
  *      label: string,
  *      helperText: string,
- *      autoCompleteSelection: array,
+ *      autoCompleteSelection: string[],
  *      onChange: (value: string) => void,
  *      onClose: (result: string | null) => void,
  *      isError: boolean,
  *      isOpen: boolean,
- *      emptyDisallow: boolean,
+ *      required: boolean,
+ *      variant: string,
  *      cancelString: string,
  *      okString: string,
  * }} props
  */
 const InputDialog = (props) => {
-    const { title, desc, value, label, helperText, autoCompleteSelection, onChange, onClose, isError, isOpen, emptyDisallow, cancelString, okString } = props;
+    const { title, desc, value, label, helperText, autoCompleteSelection, onChange, onClose,
+        isError, isOpen, required, variant, cancelString, okString } = props;
     const { t } = useTranslation();
-    const [currentValue, setCurrentValue] = useState(value ?? '');
+    const [currentValue, setCurrentValue] = useState(value);
     const cancelStr = cancelString ?? t('Cancel');
     const okStr = okString ?? t('OK');
 
     const isEmptyText = () => {
-        return emptyDisallow && currentValue.length === 0;
+        return required && (typeof currentValue === 'string') && currentValue.length === 0;
     };
 
     const handleCancel = () => {
@@ -39,7 +41,7 @@ const InputDialog = (props) => {
     };
 
     const handleOk = () => {
-        if (isEmptyText()) {
+        if (!currentValue) {
             setCurrentValue('');
             return;
         }
@@ -76,6 +78,9 @@ const InputDialog = (props) => {
                 <TextField
                     label={ label }
                     helperText={ isEmptyText() ? t('This field is required.') : helperText }
+                    required={ required }
+                    margin='dense'
+                    variant={ variant }
                     error={ isError || isEmptyText() }
                     onChange={ handleChange }
                     onKeyDown={ handleKeyDown }
@@ -96,12 +101,13 @@ InputDialog.propTypes = {
     value: PropTypes.string,
     label: PropTypes.string,
     helperText: PropTypes.string,
+    variant: PropTypes.string,
     autoCompleteSelection: PropTypes.array,
     onChange: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     isError: PropTypes.bool,
     isOpen: PropTypes.bool,
-    emptyDisallow: PropTypes.bool,
+    required: PropTypes.bool,
     cancelString: PropTypes.string,
     okString: PropTypes.string,
 };

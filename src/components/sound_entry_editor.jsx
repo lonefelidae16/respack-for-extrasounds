@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Checkbox, FormControlLabel, IconButton, List, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Checkbox, FormControlLabel, IconButton, List, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
+
+const classNamePrefix = 'sound-entry-editor';
 
 /**
  * @param {{
@@ -19,12 +21,14 @@ import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
  *      editable: boolean,
  *      isOpen: boolean,
  *      errorWhenPlaySound: boolean,
+ *      allSoundNameList: string[],
+ *      extraSoundsEntryList: string[],
  * }} props
  */
 const SoundEntryEditor = (props) => {
     const { t } = useTranslation();
     const { sounds, entry, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound,
-        checkEntryExists, editable, isOpen, errorWhenPlaySound } = props;
+        checkEntryExists, editable, isOpen, errorWhenPlaySound, allSoundNameList, extraSoundsEntryList } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [editingEntryName, setEditingEntryName] = useState(false);
@@ -35,6 +39,14 @@ const SoundEntryEditor = (props) => {
     const [volume, setVolume] = useState(sounds.map(entry => entry['volume'] ?? 1));
     const [pitch, setPitch] = useState(sounds.map(entry => entry['pitch'] ?? 1));
     const [isEvent, setEvent] = useState(sounds.map(entry => entry['type'] === 'event'));
+
+    const isEntryNameValid = () => {
+        return entryNameDuplicate || entryNameEmpty;
+    };
+
+    const isEntryNameEditing = () => {
+        return entryNameEditorShow && editingEntryName === entry;
+    };
 
     const handleListItemClick = (entryName) => {
         onAccordionClick(entryName);
@@ -52,14 +64,14 @@ const SoundEntryEditor = (props) => {
     const handleNameEdit = (currentName) => {
         setEditingEntryName(currentName);
         setEntryNameEditorShow(true);
-        setTimeout(() => document.getElementById(`entry-editor-${currentName}`).focus(), 66);
+        setTimeout(() => document.getElementById(`${classNamePrefix}-${currentName}`).focus(), 66);
     };
 
     /**
      * @param {React.KeyboardEvent} ev
      */
     const handleEntryNameEditor = (ev) => {
-        if (ev.key.match(/^enter$/i) && !entryNameDuplicate && ev.target.value) {
+        if (ev.key.match(/^enter$/i)) {
             handleItemNameChange(ev.target.value);
         }
         if (ev.key.match(/^escape$/i)) {
@@ -81,7 +93,7 @@ const SoundEntryEditor = (props) => {
     };
 
     const handleItemNameChange = (newName) => {
-        if (onItemNameChange && newName !== null) {
+        if (onItemNameChange && newName !== null && isEntryNameValid()) {
             onItemNameChange(editingEntryName, newName);
         }
         setEditingEntryName(false);
@@ -137,13 +149,11 @@ const SoundEntryEditor = (props) => {
         }
     };
 
-    const classPrefix = 'sound-entry-editor';
-
     return (
         <Accordion expanded={ isOpen }>
             <AccordionSummary onClick={ () => handleListItemClick(entry) }>
-                <div className={ `${classPrefix}-accordion-wrapper` }>
-                    <div hidden={ !editable } className={ `${classPrefix}-edit-entry` }>
+                <div className={ `${classNamePrefix}-accordion-wrapper` }>
+                    <div hidden={ !editable } className={ `${classNamePrefix}-edit-entry` }>
                         <Tooltip title={ `${t('Edit the Entry name:')} "${entry}"` } arrow>
                             <IconButton onClick={ (ev) => {
                                 handleNameEdit(entry);
@@ -153,16 +163,17 @@ const SoundEntryEditor = (props) => {
                             </IconButton>
                         </Tooltip>
                     </div>
-                    <div className={ `${classPrefix}-entry-name` }>
-                        <Typography hidden={ entryNameEditorShow && editingEntryName === entry }>{entry}</Typography>
-                        <div hidden={ !(entryNameEditorShow && editingEntryName === entry) }>
+                    <div className={ `${classNamePrefix}-entry-name` }>
+                        <Typography hidden={ isEntryNameEditing() }>{entry}</Typography>
+                        <div hidden={ !isEntryNameEditing() }>
+                            {/* TODO: Autocompletize */}
                             <TextField
                                 label={ t('Entry') }
                                 defaultValue={ entry }
                                 margin='dense'
-                                id={ `entry-editor-${entry}` }
+                                id={ `${classNamePrefix}-${entry}` }
                                 variant='standard'
-                                error={ entryNameDuplicate || entryNameEmpty }
+                                error={ isEntryNameValid() }
                                 helperText={ (entryNameDuplicate) ? t('This name is already exists.') : '' }
                                 onKeyDown={ handleEntryNameEditor }
                                 onChange={ checkValidEntryName }
@@ -172,7 +183,7 @@ const SoundEntryEditor = (props) => {
                             />
                         </div>
                     </div>
-                    <div hidden={ !editable } className={ `${classPrefix}-remove-entry` }>
+                    <div hidden={ !editable } className={ `${classNamePrefix}-remove-entry` }>
                         <Tooltip title={ t('Remove this Entry') } arrow>
                             <IconButton onClick={ (ev) => {
                                 handleItemDelete(entry);
@@ -187,16 +198,16 @@ const SoundEntryEditor = (props) => {
             <AccordionDetails>
                 {sounds.map((soundEntry, index) => (
                     <List key={ `${entry}-sound${index}` }>
-                        <TextField
-                            key={ `${entry}-sound${index}-name` }
-                            label={ t('Sound Name') }
+                        <Autocomplete
                             size='small'
-                            variant='standard'
                             value={ soundName[index] }
+                            options={ allSoundNameList }
                             fullWidth
                             sx={ { marginBottom: '1em' } }
                             disabled={ !editable }
-                            onChange={ (ev) => handleSoundNameChange(index, ev.target.value) }
+                            onChange={ (ev, newValue) => handleSoundNameChange(index, newValue) }
+                            onInputChange={ (ev, newValue) => handleSoundNameChange(index, newValue) }
+                            renderInput={ params => <TextField { ...params } label={ t('Sound Name') } /> }
                         />
                         <Stack>
                             <small>{t('Volume')}</small>
@@ -256,7 +267,7 @@ const SoundEntryEditor = (props) => {
                                     onChange={ (ev, checked) => handleSoundTypeChange(index, checked) }
                                 />
                             </Tooltip>
-                            <div className={ `${classPrefix}-preview-sound` }>
+                            <div className={ `${classNamePrefix}-preview-sound` }>
                                 <Tooltip title={ (errorWhenPlaySound) ? t('An error occurred...') : <>{t('Play this sound.')}<br />{t('The result may be different in game.')}</> } arrow>
                                     <Box component='span'>
                                         <IconButton
@@ -288,6 +299,8 @@ SoundEntryEditor.propTypes = {
     editable: PropTypes.bool,
     isOpen: PropTypes.bool,
     errorWhenPlaySound: PropTypes.any,
+    allSoundNameList: PropTypes.array,
+    extraSoundsEntryList: PropTypes.array,
 };
 
 export default SoundEntryEditor;
