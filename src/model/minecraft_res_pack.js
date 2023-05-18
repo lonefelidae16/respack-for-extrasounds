@@ -77,15 +77,15 @@ export default class MinecraftResPack {
      *
      * @param {string} fileName Target file path.
      * @param {string} type     "base64" | "string" | "text" | "binarystring" | "array" | "uint8array" | "arraybuffer" | "blob" | "nodebuffer"
-     * @returns {Promise<string | number[] | Uint8Array | ArrayBuffer | Blob | Buffer>} The file content in Promise.
+     * @returns Promise<string | number[] | Uint8Array | ArrayBuffer | Blob | Buffer>} The file content in Promise.
      */
-    async getFile(fileName, type) {
-        const file = this.zip.file(fileName);
-        if (!file) {
-            return new Promise((resolve, reject) => reject(undefined));
+    async getFileAsync(fileName, type) {
+        try {
+            const file = this.zip.file(fileName);
+            return file.async(type).catch(() => undefined);
+        } catch {
+            return undefined;
         }
-
-        return file.async(type).catch(() => undefined);
     }
 
     /**

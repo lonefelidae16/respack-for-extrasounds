@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Checkbox, FormControlLabel, IconButton, List, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Delete, Edit, MusicNoteOutlined, MusicOff } from '@mui/icons-material';
 
+import { StateHandler } from '../util/globals';
+
 const classNamePrefix = 'sound-entry-editor';
 
 /**
@@ -21,14 +23,12 @@ const classNamePrefix = 'sound-entry-editor';
  *      editable: boolean,
  *      isOpen: boolean,
  *      errorWhenPlaySound: boolean,
- *      allSoundNameList: string[],
- *      extraSoundsEntryList: string[],
  * }} props
  */
 const SoundEntryEditor = (props) => {
     const { t } = useTranslation();
     const { sounds, entry, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick, onPlaySound,
-        checkEntryExists, editable, isOpen, errorWhenPlaySound, allSoundNameList, extraSoundsEntryList } = props;
+        checkEntryExists, editable, isOpen, errorWhenPlaySound } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [editingEntryName, setEditingEntryName] = useState(false);
@@ -201,7 +201,7 @@ const SoundEntryEditor = (props) => {
                         <Autocomplete
                             size='small'
                             value={ soundName[index] }
-                            options={ allSoundNameList }
+                            options={ StateHandler.getSoundNameList() }
                             fullWidth
                             sx={ { marginBottom: '1em' } }
                             disabled={ !editable }
@@ -299,8 +299,6 @@ SoundEntryEditor.propTypes = {
     editable: PropTypes.bool,
     isOpen: PropTypes.bool,
     errorWhenPlaySound: PropTypes.any,
-    allSoundNameList: PropTypes.array,
-    extraSoundsEntryList: PropTypes.array,
 };
 
 export default SoundEntryEditor;

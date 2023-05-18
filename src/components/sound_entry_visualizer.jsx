@@ -68,7 +68,7 @@ const SoundEntryVisualizer = (props) => {
     };
 
     const objectRenderer = () => {
-        const targets = Object.keys(objects).filter(value => (searchFilter) ? value.startsWith(searchFilter) : value);
+        const targets = Object.keys(objects).filter(value => (searchFilter) ? value.includes(searchFilter) : value);
         return targets.map((key, index) =>
             draggable ? (
                 <Draggable key={ key } draggableId={ key } index={ index }>

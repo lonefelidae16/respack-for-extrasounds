@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useTranslation } from 'react-i18next';
 import { useCookies } from 'react-cookie';
@@ -20,6 +20,7 @@ import SimpleBoxAnimator from './components/simple_box_animator.jsx';
 
 import './scss/index.scss';
 import packageJson from '../package.json';
+import { StateHandler } from './util/globals.js';
 
 const darkTheme = createTheme({
     palette: {
@@ -39,12 +40,10 @@ const App = () => {
     /** @type {[string, React.Dispatch<string>]} */
     const [currentScreen, setCurrentScreen] = useState((document.documentElement.clientWidth <= 768) ? 'MobileScreen' : 'StartScreen');
     const [mayBusyWait, setMayBusyWait] = useState(true);
+    const [initialSoundsJson, setInitialSoundsJson] = useState({});
     const [cookies] = useCookies([cookieKey]);
 
     const { t } = useTranslation();
-
-    /** @type {React.MutableRefObject<{withState: (obj: {resPack: MinecraftResPack, extraSoundsVer: string}) => Promise<void>}>} */
-    const editScreenRef = useRef();
 
     useMemo(async () => {
         await ExtraSounds.fetchTagRevisionsAsync();
@@ -69,20 +68,20 @@ const App = () => {
     /**
      * Moves to the EditScreen when succeeded to fetch required data.
      *
-     * @param {MinecraftResPack} currentPack Target ResourcePack.
-     * @param {string} extraSoundsVer        Target ExtraSounds version.
+     * @param {import('./model/minecraft_res_pack.js').default} currentPack Target ResourcePack.
+     * @param {string} extraSoundsVer                                       Target ExtraSounds version.
      */
     const createProject = (currentPack, extraSoundsVer) => {
-        editScreenRef.current.withState({
-            resPack: currentPack,
-            extraSoundsVer,
-        }).then(() => {
-            setCurrentScreen('EditScreen');
-        }).catch(() => {
-            setSomeError(<>{t('Failed to connect the Official Minecraft server.')} <a href='#' onClick={ () => location.reload() }>{t('Try to reload this page?')}</a></>);
-        }).finally(() => {
-            setMayBusyWait(false);
-        });
+        StateHandler.createProjectAsync(currentPack, extraSoundsVer)
+            .then(() => {
+                setInitialSoundsJson(currentPack.soundsJson);
+                setCurrentScreen('EditScreen');
+            }).catch((error) => {
+                console.error(error);
+                setSomeError(<>{t('Failed to connect the Official Minecraft server.')} <a href='#' onClick={ () => location.reload() }>{t('Try to reload this page?')}</a></>);
+            }).finally(() => {
+                setMayBusyWait(false);
+            });
     };
 
     return (
@@ -91,7 +90,7 @@ const App = () => {
             <div className='version-string minecraft'>{packageJson.version}</div>
             <MobileScreen onContinueButtonPress={ () => setCurrentScreen('StartScreen') } hidden={ currentScreen !== 'MobileScreen' } />
             <StartScreen onCreateProject={ createProject } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'StartScreen' } />
-            <EditScreen ref={ editScreenRef } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'EditScreen' } />
+            <EditScreen initialSoundsJson={ initialSoundsJson } onChangeWaitState={ shouldShowBackdrop } hidden={ currentScreen !== 'EditScreen' } />
             <div className='error-msg center' hidden={ !someError }>{someError}</div>
             <Backdrop
                 sx={ { color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 } }

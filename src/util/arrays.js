@@ -10,4 +10,8 @@ export default class Arrays {
     static unique(...array) {
         return Array.from(new Set(array));
     }
+
+    static sortedUnique(...array) {
+        return this.unique(...array).sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+    }
 }
