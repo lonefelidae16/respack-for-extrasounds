@@ -104,6 +104,7 @@ const SoundEntryEditor = (props) => {
     };
 
     const handleSoundNameChange = (index, value) => {
+        value = (value) ?? '';
         setSoundName(current => {
             const newNames = [...current];
             newNames[index] = value;
