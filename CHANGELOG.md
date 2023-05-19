@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 <!--* <small>_Any bugs/issues will be written here when found._</small>-->
 * Retarget ResourcePack feature is still work in progress.
 
-## [0.2.1-indev] - 2023-05-18 JST
+## [0.2.1-indev] - 2023-05-19 JST
 ### 🔧 Fixed
 
 * Crash when clear Sound Name field.
