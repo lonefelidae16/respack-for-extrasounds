@@ -21,7 +21,7 @@ if (!isset($parsed_url['scheme']) || $parsed_url['scheme'] !== 'https') {
 $server_host = (isset($_SERVER['HTTP_HOST'])) ? parse_url($_SERVER['HTTP_HOST']) : array();
 $server_referer = (isset($_SERVER['HTTP_REFERER'])) ? parse_url($_SERVER['HTTP_REFERER']) : array();
 if (!isset($server_host['scheme'])) {
-    $server_host['scheme'] = (isset($_SERVER['HTTPS'])) ? 'https' : 'http';
+    $server_host['scheme'] = (isset($_SERVER['HTTPS']) || isset($_SERVER['HTTP_X_FORWARDED_SSL'])) ? 'https' : 'http';
 }
 if (!isset($server_referer['scheme'])) {
     $server_referer['scheme'] = 'http';
