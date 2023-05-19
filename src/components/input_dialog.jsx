@@ -37,6 +37,7 @@ const InputDialog = (props) => {
 
     const handleCancel = () => {
         onClose(null);
+        setCurrentValue(null);
     };
 
     const handleOk = () => {
@@ -45,6 +46,7 @@ const InputDialog = (props) => {
             return;
         }
         onClose(currentValue);
+        setCurrentValue(null);
     };
 
     /**

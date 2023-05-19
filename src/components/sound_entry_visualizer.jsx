@@ -26,11 +26,13 @@ const classNamePrefix = 'sound-entry-visualizer';
  *      id: string,
  *      draggable: boolean,
  *      editable: boolean,
+ *      limitCount: number,
  * }} props
  */
 const SoundEntryVisualizer = (props) => {
     const { t } = useTranslation();
-    const { objects, onItemClick, onEntryAdd, checkEntryExists, title, id, draggable, editable } = props;
+    const { objects, onItemClick, onEntryAdd, checkEntryExists,
+        title, id, draggable, editable, limitCount } = props;
     /** @type {[string | false, React.Dispatch<string | false>]} */
     const [openedAccordion, setOpenedAccordion] = useState(false);
     const [isOenedNewEntryDialog, setOpenedNewEntryDialog] = useState(false);
@@ -73,6 +75,15 @@ const SoundEntryVisualizer = (props) => {
         }
     };
 
+    /**
+     *
+     * @param {React.ChangeEvent} ev
+     */
+    const handleNewEntryName = (ev) => {
+        const newValue = ev.target.value;
+        setNewEntryInvalid(newValue.length === 0 || checkEntryExists(newValue));
+    };
+
     const objectRenderer = () => {
         const targets = Object.keys(objects).filter(value => (searchFilter) ? value.startsWith(searchFilter) : value);
         const inputSeq = searchFilter.split('.').length - 1;
@@ -81,7 +92,7 @@ const SoundEntryVisualizer = (props) => {
                 .map(key => key.split('.').slice(0, inputSeq + 1).join('.'))
         );
 
-        if (targets.length > 20) {
+        if (targets.length > limitCount ?? 20) {
             /*
             action...
             hotbar...
@@ -167,7 +178,7 @@ const SoundEntryVisualizer = (props) => {
                     title={ t('Add New Entry') }
                     label={ t('Entry Name') }
                     variant='standard'
-                    onChange={ (ev) => setNewEntryInvalid(ev.target.value.length === 0 || checkEntryExists(ev.target.value)) }
+                    onChange={ handleNewEntryName }
                     isError={ isNewEntryInvalid }
                     onClose={ handleAddEntry }
                     required
@@ -186,6 +197,7 @@ SoundEntryVisualizer.propTypes = {
     id: PropTypes.string.isRequired,
     draggable: PropTypes.bool,
     editable: PropTypes.bool,
+    limitCount: PropTypes.number,
 };
 
 export default SoundEntryVisualizer;

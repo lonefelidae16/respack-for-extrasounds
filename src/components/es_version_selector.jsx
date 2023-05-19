@@ -11,7 +11,7 @@ const esDefaultRef = ExtraSounds.defaultRef;
 
 const ESVersionSelector = (props) => {
     /** @type {[string, React.Dispatch<string>]} */
-    const [extraSoundsVer, setExtraSoundsVer] = useState(props.defaultSelect ?? 'dev');
+    const [extraSoundsVer, setExtraSoundsVer] = useState(props.defaultSelect ?? esDefaultRef);
 
     const { t } = useTranslation();
 

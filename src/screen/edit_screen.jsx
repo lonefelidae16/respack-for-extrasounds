@@ -29,6 +29,10 @@ const registerUnloadConfirmation = () => {
     window.addEventListener('beforeunload', handleBeforeUnload);
 };
 
+const unregisterUnloadConfirmation = () => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+};
+
 /**
  * @param {{
  *      onChangeWaitState: (state: boolean) => void,
@@ -54,6 +58,8 @@ const EditScreen = (props) => {
         }
         if (currentPack.soundsJson !== resSoundsJson) {
             registerUnloadConfirmation();
+        } else {
+            unregisterUnloadConfirmation();
         }
     }, [resSoundsJson]);
 
@@ -66,7 +72,7 @@ const EditScreen = (props) => {
     };
 
     const onPackDownload = () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
+        unregisterUnloadConfirmation();
         const resPack = StateHandler.getResourcePack();
         resPack.soundsJson = resSoundsJson;
         resPack.generateZip();
@@ -275,6 +281,7 @@ const EditScreen = (props) => {
                             onItemClick={ handleSourceItemClick }
                             title='ExtraSounds'
                             id={ dropSourceId }
+                            limitCount={ 100 }
                             draggable
                         />
                         <SoundEntryVisualizer
@@ -290,6 +297,7 @@ const EditScreen = (props) => {
                             checkEntryExists={ handleCheckEntryName }
                             title={ t('ResourcePack') }
                             id={ dropDestinationId }
+                            limitCount={ 10 }
                             editable
                         />
                     </DragDropContext>
