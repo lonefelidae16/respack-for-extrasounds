@@ -1,5 +1,7 @@
 'use strict';
 
+/** @typedef {import('../@types/sounds_json.js').SoundEntry} SoundEntry */
+
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +16,7 @@ const classNamePrefix = 'sound-entry-editor';
 
 /**
  * @param {{
- *      sounds: array,
+ *      sounds: SoundEntry[] | string[],
  *      entry: string,
  *      onItemDelete: (value: string) => void,
  *      onItemNameChange: (before: string, after: string) => void,

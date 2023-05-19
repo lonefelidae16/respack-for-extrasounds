@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @typedef {import('../@types/sounds_json.js').SoundsJson} SoundsJson
+ * @typedef {import('../@types/assets_json.js').AssetsJson} AssetsJson
+ */
+
 import { curlFetch } from '../util/curl_fetch.js';
 
 const manifestUri = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json';
@@ -23,7 +28,7 @@ export default class MinecraftAssets {
      * Retrieves json objects for all Minecraft assets.
      *
      * @param {string} mcVersion Target Minecraft version.
-     * @returns {Promise<object>} The json objects.
+     * @returns {Promise<AssetsJson>} The json objects.
      */
     static async getMCAssetsJsonAsync(mcVersion = 'latest') {
         return curlFetch(manifestUri)
@@ -50,7 +55,7 @@ export default class MinecraftAssets {
      * Retrieves json objects for Minecraft sounds.
      *
      * @param {string} mcVersion Target Minecraft version.
-     * @returns {Promise<object>} The json objects.
+     * @returns {Promise<SoundsJson>} The json objects.
      */
     static async getMCSoundsJsonAsync(mcVersion = 'latest') {
         return this.getMCAssetsJsonAsync(mcVersion)
@@ -60,9 +65,11 @@ export default class MinecraftAssets {
     }
 
     /**
+     * Merges the specified sounds.json.
      *
-     * @param {object} base
-     * @param {...any} merger
+     * @param {SoundsJson} base      The base json object.
+     * @param {...SoundsJson} merger Target object array to merge.
+     * @return {SoundsJson} The result.
      */
     static async mergeSoundsJson(base, ...merger) {
         merger.forEach(json => {

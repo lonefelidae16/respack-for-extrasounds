@@ -3,6 +3,7 @@
         "browser": true,
         "es2021": true
     },
+    "parser": "@typescript-eslint/parser",
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
@@ -15,7 +16,7 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react", "react-hooks"
+        "react", "react-hooks", "@typescript-eslint"
     ],
     "rules": {
         "indent": [ "warn", 4 ],
@@ -36,6 +37,7 @@
         "no-unused-vars" : [ "warn" ],
         "no-undef": [ "error" ],
         "no-empty": [ "warn" ],
+        "no-console": "error",
         "react/jsx-boolean-value": [ "error" ],
         "react/jsx-curly-brace-presence": [ "error" ],
         "react/jsx-curly-spacing": [ "error", { "when": "always", "children": false } ],

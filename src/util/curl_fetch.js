@@ -4,7 +4,7 @@
  * The wrapper function that requests to backend php_curl.
  *
  * @param {string} url Target url to fetch.
- * @returns
+ * @returns {Promise<Response>} The task.
  */
 const curlFetch = async (url) => {
     let baseUri = `${location.protocol}//${location.host}${location.pathname}`;

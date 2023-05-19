@@ -12,6 +12,7 @@ import WebFont from 'webfontloader';
 import ExtraSounds from './model/extra_sounds.js';
 
 import { i18n, cookieKey } from './i18n/config.js';
+import { StateHandler } from './util/globals.js';
 
 import EditScreen from './screen/edit_screen.jsx';
 import StartScreen from './screen/start_screen.jsx';
@@ -20,7 +21,6 @@ import SimpleBoxAnimator from './components/simple_box_animator.jsx';
 
 import './scss/index.scss';
 import packageJson from '../package.json';
-import { StateHandler } from './util/globals.js';
 
 const darkTheme = createTheme({
     palette: {

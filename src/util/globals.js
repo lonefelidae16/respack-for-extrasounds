@@ -1,29 +1,40 @@
 'use strict';
 
-import ExtraSounds from '../model/extra_sounds';
+/**
+ * @typedef {import('../model/minecraft_res_pack.js').default} MinecraftResPack
+ * @typedef {import('../@types/sounds_json.js').SoundsJson} SoundsJson
+ * @typedef {import('../@types/sounds_json.js').SoundEntry} SoundEntry
+ * @typedef {import('../@types/assets_json.js').AssetsJson} AssetsJson
+ */
+
+import ExtraSounds from '../model/extra_sounds.js';
 import MinecraftAssets from '../model/minecraft_assets.js';
 import Arrays from './arrays.js';
 
 class StateHandler {
-    /** @type {import('../model/minecraft_res_pack.js').default | undefined} */
+    /** @type {MinecraftResPack | undefined} */
     static #resourcePack = undefined;
     /** @type {string} */
     static #extraSoundsVer;
     /** @type {string} */
     static #minecraftVer;
-    /** @type {{ objects: {} }} */
+    /** @type {AssetsJson} */
     static #vanillaAssetsJson = {};
     /** @type {string[]} */
     static #allSoundNameList = [];
+    /** @type {SoundsJson} */
     static #vanillaSoundsJson = {};
-    /** @type {{ extrasounds: {} }} */
+    /** @type {{ extrasounds: SoundsJson }} */
     static #modSoundsJson = {};
     /** @type {string[]} */
     static #extraSoundsEntryList = [];
 
     /**
-     * @param {import('../model/minecraft_res_pack.js').default} resPack
-     * @param {string} extraSoundsVer
+     * Creates the new project with resPack.
+     *
+     * @param {MinecraftResPack} resPack Source pack data.
+     * @param {string} extraSoundsVer    Target ExtraSounds' version.
+     * @returns {Promise<void>} The task.
      */
     static createProjectAsync(resPack, extraSoundsVer) {
         this.#resourcePack = resPack;
@@ -31,6 +42,9 @@ class StateHandler {
         return this.refreshJsonAsync();
     }
 
+    /**
+     * Clears all states.
+     */
     static clearProject() {
         this.#resourcePack = undefined;
         this.#allSoundNameList = [];
@@ -42,6 +56,11 @@ class StateHandler {
         this.#minecraftVer = '';
     }
 
+    /**
+     * Fetches and loads all json.
+     *
+     * @returns {Promise<void>} The task.
+     */
     static async refreshJsonAsync() {
         this.#minecraftVer = this.#resourcePack.getMCVerFromPackFormat();
         const tasks = [];
@@ -101,7 +120,10 @@ class StateHandler {
     }
 
     /**
+     * Attempts re-target ResourcePack.
+     *
      * @param {string} extraSoundsVer Target ExtraSounds' version
+     * @returns {Promise<void>} The task.
      */
     static async retartgetPack(extraSoundsVer) {
         // Change ExtraSounds version.
@@ -149,25 +171,26 @@ class StateHandler {
     }
 
     /**
+     * Attempts to play the specified sound.
      *
-     * @param {string} entryName
-     * @param {number} volume
-     * @param {number} pitch
-     * @param {boolean} isEvent
-     * @return {Promise<void | undefined>}
+     * @param {string} soundName Target sound, such as 'minecraft:block.stone.hit' or 'minecraft:note/hat'.
+     * @param {number} volume    The volume.
+     * @param {number} pitch     The pitch.
+     * @param {boolean} isEvent  If true, searches real file recursively.
+     * @return {Promise<void>} The playback task.
      */
-    static async playSoundAsync(entryName, volume, pitch, isEvent) {
+    static async playSoundAsync(soundName, volume, pitch, isEvent) {
         let fileName = undefined, namespace = 'minecraft', path = undefined;
-        const isVanilla = entryName.startsWith('minecraft:') || !(entryName.includes(':'));
+        const isVanilla = soundName.startsWith('minecraft:') || !(soundName.includes(':'));
         if (isEvent) {
             let entryNamespace = undefined;
-            if (entryName.includes(':')) {
-                [entryNamespace, entryName] = entryName.split(':');
+            if (soundName.includes(':')) {
+                [entryNamespace, soundName] = soundName.split(':');
             }
-            /** @type {{name: string, volume: number, pitch: number, weight: number, type: string}[] | string[]} */
             const entries = (isVanilla) ?
-                this.#vanillaSoundsJson[entryName]['sounds'] :
-                this.#modSoundsJson[entryNamespace][entryName]['sounds'];
+                this.#vanillaSoundsJson[soundName]['sounds'] :
+                this.#modSoundsJson[entryNamespace][soundName]['sounds'];
+            /** @type {SoundEntry} */
             const pickedEntry = entries[Math.floor(Math.random() * entries.length)];
             if ((typeof pickedEntry) === 'string') {
                 fileName = pickedEntry;
@@ -185,7 +208,7 @@ class StateHandler {
                 }
             }
         } else {
-            fileName = entryName;
+            fileName = soundName;
         }
 
         if (fileName.includes(':')) {
@@ -203,9 +226,10 @@ class StateHandler {
     }
 
     /**
+     * Determines the specified sound name is event or not.
      *
-     * @param {string} name
-     * @returns {boolean}
+     * @param {string} name Traget sound name.
+     * @returns {boolean} Returns true if the name is event sound.
      */
     static isEventSoundName(name) {
         let namespace = 'minecraft', path = name;

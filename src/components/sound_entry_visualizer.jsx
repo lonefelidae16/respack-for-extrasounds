@@ -1,5 +1,7 @@
 'use strict';
 
+/** @typedef {import('../@types/sounds_json.js').SoundsJson} SoundsJson */
+
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +20,7 @@ const classNamePrefix = 'sound-entry-visualizer';
 
 /**
  * @param {{
- *      objects: object,
+ *      objects: SoundsJson,
  *      onItemClick: (value: string) => void,
  *      onEntryAdd: (value: string) => void,
  *      checkEntryExists: (value: string) => boolean,

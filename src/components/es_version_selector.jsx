@@ -16,7 +16,7 @@ const ESVersionSelector = (props) => {
     const { t } = useTranslation();
 
     /**
-     * @param {import('@mui/material').SelectChangeEvent<string>} ev
+     * @param {React.SelectChangeEvent<string>} ev
      */
     const onExtraSoundsVerChanged = (ev) => {
         setExtraSoundsVer(ev.target.value);

@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @typedef {import('../@types/sounds_json.js').SoundsJson} SoundsJson
+ * @typedef {import('../@types/pack_mcmeta.js').PackMCMeta} PackMCMeta
+ */
+
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 
@@ -23,8 +28,9 @@ const mcMeraFile = 'pack.mcmeta';
 const extraSoundsJsonFile = 'assets/extrasounds/sounds.json';
 
 export default class MinecraftResPack {
-    /** @type {{ pack: { pack_format: number, description: string, author: string | undefined }}} */
+    /** @type {PackMCMeta} */
     mcMetaJson = {};
+    /** @type {SoundsJson} */
     soundsJson = {};
     /** @type {JSZip} */
     zip = null;
@@ -77,7 +83,7 @@ export default class MinecraftResPack {
      *
      * @param {string} fileName Target file path.
      * @param {string} type     "base64" | "string" | "text" | "binarystring" | "array" | "uint8array" | "arraybuffer" | "blob" | "nodebuffer"
-     * @returns Promise<string | number[] | Uint8Array | ArrayBuffer | Blob | Buffer>} The file content in Promise.
+     * @returns {Promise<string | number[] | Uint8Array | ArrayBuffer | Blob | Buffer>} The file content in Promise.
      */
     async getFileAsync(fileName, type) {
         try {

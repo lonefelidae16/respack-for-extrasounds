@@ -11,7 +11,13 @@ export default class Arrays {
         return Array.from(new Set(array));
     }
 
-    static sortedUnique(array) {
-        return this.unique(array).sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase()));
+    /**
+     * Removes duplicate values and sortes for string array.
+     *
+     * @param {string[]} array Target array.
+     * @returns The filtered and sorted array.
+     */
+    static sortedUnique(array, isDescending = false) {
+        return this.unique(array).sort((a, b) => (isDescending ? -1 : 1) * a.toUpperCase().localeCompare(b.toUpperCase()));
     }
 }

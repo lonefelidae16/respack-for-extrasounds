@@ -1,5 +1,7 @@
 'use strict';
 
+/** @typedef {import('../@types/sounds_json.js').SoundsJson} SoundsJson */
+
 import React, { useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
@@ -19,16 +21,27 @@ const dropDestinationId = 'res-pack';
 const dragCssClassName = 'dragging';
 const dragCssErrorClassName = 'error';
 
+/**
+ * Prevents unloading this page.
+ *
+ * @param {BeforeUnloadEvent} ev
+ */
 const handleBeforeUnload = (ev) => {
     ev.preventDefault();
     ev.returnValue = '';
 };
 
+/**
+ * Registers displaying confirmation dialog.
+ */
 const registerUnloadConfirmation = () => {
     window.removeEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('beforeunload', handleBeforeUnload);
 };
 
+/**
+ * Removes displaying confirmation dialog.
+ */
 const unregisterUnloadConfirmation = () => {
     window.removeEventListener('beforeunload', handleBeforeUnload);
 };
@@ -36,14 +49,13 @@ const unregisterUnloadConfirmation = () => {
 /**
  * @param {{
  *      onChangeWaitState: (state: boolean) => void,
- *      initialSoundsJson: object,
+ *      initialSoundsJson: SoundsJson,
  *      hidden: boolean,
  * }} props
  */
 const EditScreen = (props) => {
     const { hidden, initialSoundsJson, onChangeWaitState } = props;
 
-    /** @type {[object, React.Dispatch<object>]} */
     const [resSoundsJson, setResSoundsJson] = useState(initialSoundsJson);
     const [retargetDlgOpen, setRetargetDlgOpen] = useState(false);
     /** @type {[React.JSX.Element, React.Dispatch<React.JSX.Element>]} */
@@ -67,10 +79,16 @@ const EditScreen = (props) => {
         setResSoundsJson(initialSoundsJson);
     }, [initialSoundsJson]);
 
+    /**
+     * Opens Retarget dialog.
+     */
     const onPackRetargetClick = () => {
         setRetargetDlgOpen(true);
     };
 
+    /**
+     * Gets the Zip and unregisters unloading dialog.
+     */
     const onPackDownload = () => {
         unregisterUnloadConfirmation();
         const resPack = StateHandler.getResourcePack();
@@ -96,6 +114,11 @@ const EditScreen = (props) => {
         });
     };
 
+    /**
+     * Handles start dragging provided by react-beautiful-dnd.
+     *
+     * @param {import('react-beautiful-dnd').DragStart} component Target element.
+     */
     const handleDragStart = (component) => {
         const dropAreaDOM = document.querySelector(dropAreaDOMSelector);
         dropAreaDOM.classList.add(dragCssClassName);
@@ -104,6 +127,11 @@ const EditScreen = (props) => {
         }
     };
 
+    /**
+     * Handles mouse-up event provided by react-beautiful-dnd.
+     *
+     * @param {import('react-beautiful-dnd').DropResult} result The result.
+     */
     const handleDrop = (result) => {
         document.querySelector(dropAreaDOMSelector).classList.remove(dragCssClassName, dragCssErrorClassName);
         if (!result['destination'] || result['destination']['droppableId'] !== dropDestinationId) {
@@ -113,7 +141,9 @@ const EditScreen = (props) => {
     };
 
     /**
-     * @param {string} entryName
+     * Attempts source json entry copy.
+     *
+     * @param {string} entryName Target entry name.
      */
     const handleSourceItemClick = (entryName) => {
         const targetEntry = StateHandler.getModSoundsJson()['extrasounds'][entryName];
@@ -127,9 +157,17 @@ const EditScreen = (props) => {
         }
     };
 
+    /**
+     * Unused.
+     */
     const handleEditableItemClick = () => {
     };
 
+    /**
+     * Attempts to delete destination json entry.
+     *
+     * @param {string} entryName Traget entry name.
+     */
     const handleEditableItemDelete = (entryName) => {
         if (!resSoundsJson[entryName]) {
             return;
@@ -141,6 +179,12 @@ const EditScreen = (props) => {
         });
     };
 
+    /**
+     * Attempts to rename json entry.
+     *
+     * @param {string} before Target json entry.
+     * @param {string} after  The replacement entry name.
+     */
     const handleEditableItemNameChange = (before, after) => {
         if (!resSoundsJson[before] || before === after) {
             return;
@@ -154,7 +198,9 @@ const EditScreen = (props) => {
     };
 
     /**
-     * @param {string} entryName
+     * Checks if the specified entry name exists.
+     *
+     * @param {string} entryName Target entry name.
      * @returns {boolean} Returns true if the entryName already exists.
      */
     const handleCheckEntryName = (entryName) => {
@@ -162,16 +208,17 @@ const EditScreen = (props) => {
     };
 
     /**
+     * Attempts to change the json entry.
+     *
      * @param {{
-     *      soundEntry: string,
-     *      soundEntryIndex: number,
-     *      property: string,
-     *      value: any
-     * }} obj
-     */
-    const handleEditableValueChange = (obj) => {
+    *      soundEntry: string,
+    *      soundEntryIndex: number,
+    *      property: string,
+    *      value: any
+    * }} param0 Target parameters.
+    */
+    const handleEditableValueChange = ({ soundEntry, soundEntryIndex, property, value }) => {
         try {
-            const { soundEntry, soundEntryIndex, property, value } = obj;
             let target = resSoundsJson[soundEntry]['sounds'][soundEntryIndex];
             if (typeof target === 'string') {
                 target = { 'name': target };
@@ -192,6 +239,11 @@ const EditScreen = (props) => {
         }
     };
 
+    /**
+     * Attempts to add the entry name to json.
+     *
+     * @param {string} entryName Target entry name.
+     */
     const handleAddEntry = (entryName) => {
         setResSoundsJson(current => {
             const newJson = { ...current };
@@ -202,6 +254,11 @@ const EditScreen = (props) => {
         });
     };
 
+    /**
+     * Attempts to add a new element to array in json entry.
+     *
+     * @param {string} entryName Target entry name.
+     */
     const handleAddSoundToEntry = (entryName) => {
         if (!resSoundsJson[entryName]) {
             return;
@@ -213,6 +270,12 @@ const EditScreen = (props) => {
         });
     };
 
+    /**
+     * Attempts to remove element from array in json entry.
+     *
+     * @param {string} entryName Target entry name.
+     * @param {number} index     Target array index to remove.
+     */
     const handleRemoveSoundFromEntry = (entryName, index) => {
         if (!resSoundsJson[entryName] || !resSoundsJson[entryName]['sounds']) {
             return;
