@@ -11,6 +11,7 @@ import { Delete, Edit, LibraryAdd, MusicNoteOutlined, MusicOff, RemoveCircle } f
 import ListboxComponent from './listbox_component.jsx';
 
 import { StateHandler } from '../util/globals.js';
+import Arrays from '../util/arrays.js';
 
 const classNamePrefix = 'sound-entry-editor';
 
@@ -18,8 +19,8 @@ const classNamePrefix = 'sound-entry-editor';
  * @param {{
  *      sounds: SoundEntry[] | string[],
  *      entry: string,
- *      onItemDelete: (value: string) => void,
- *      onItemNameChange: (before: string, after: string) => void,
+ *      onEntryDelete: (value: string) => void,
+ *      onEntryNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
  *      onAccordionClick: (value: string) => void,
  *      onSoundAddToEntry: (value: string) => void,
@@ -31,7 +32,7 @@ const classNamePrefix = 'sound-entry-editor';
  */
 const SoundEntryEditor = (props) => {
     const { t } = useTranslation();
-    const { sounds, entry, onItemDelete, onItemNameChange, onItemValueChange, onAccordionClick,
+    const { sounds, entry, onEntryDelete, onEntryNameChange, onItemValueChange, onAccordionClick,
         onSoundAddToEntry, onSoundRemoveFromEntry, checkEntryExists, editable, isOpen } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
     const [currentEntryName, setCurrentEntryName] = useState(entry);
@@ -43,7 +44,7 @@ const SoundEntryEditor = (props) => {
     const [volume, setVolume] = useState(sounds.map(entry => entry['volume'] ?? 1));
     const [pitch, setPitch] = useState(sounds.map(entry => entry['pitch'] ?? 1));
     const [isEvent, setEvent] = useState(sounds.map(entry => entry['type'] === 'event'));
-    const [isInfiniteLoopSound, setInfiniteLoopSound] = useState([...Array(entry.length)].map(() => false));
+    const [isInfiniteLoopSound, setInfiniteLoopSound] = useState([...Array(sounds.length)].map(() => false));
 
     const isEntryNameValid = () => {
         return !entryNameDuplicate && !entryNameEmpty;
@@ -53,9 +54,9 @@ const SoundEntryEditor = (props) => {
         onAccordionClick(entryName);
     };
 
-    const handleItemDelete = (entryName) => {
-        if (onItemDelete) {
-            onItemDelete(entryName);
+    const handleEntryDelete = (entryName) => {
+        if (onEntryDelete) {
+            onEntryDelete(entryName);
         }
         onAccordionClick(false);
         setEntryNameEditorShow(false);
@@ -84,8 +85,8 @@ const SoundEntryEditor = (props) => {
     };
 
     const handleEntryNameChange = (newName) => {
-        if (onItemNameChange && newName !== null && isEntryNameValid()) {
-            onItemNameChange(entry, newName);
+        if (onEntryNameChange && newName !== null && isEntryNameValid()) {
+            onEntryNameChange(entry, newName);
         }
         setEntryNameEditorShow(false);
     };
@@ -194,6 +195,26 @@ const SoundEntryEditor = (props) => {
         if (onSoundRemoveFromEntry) {
             onSoundRemoveFromEntry(entry, index);
         }
+        setSoundName(current => {
+            delete current[index];
+            return Arrays.filterNonNull(current);
+        });
+        setVolume(current => {
+            delete current[index];
+            return Arrays.filterNonNull(current);
+        });
+        setPitch(current => {
+            delete current[index];
+            return Arrays.filterNonNull(current);
+        });
+        setEvent(current => {
+            delete current[index];
+            return Arrays.filterNonNull(current);
+        });
+        setInfiniteLoopSound(current => {
+            delete current[index];
+            return Arrays.filterNonNull(current);
+        });
     };
 
     return (
@@ -245,7 +266,7 @@ const SoundEntryEditor = (props) => {
                     <div hidden={ !editable } className={ `${classNamePrefix}-remove-entry` }>
                         <Tooltip title={ t('Remove this Entry.') } arrow>
                             <IconButton onClick={ (ev) => {
-                                handleItemDelete(entry);
+                                handleEntryDelete(entry);
                                 ev.stopPropagation();
                             } }>
                                 <Delete color='error' />
@@ -379,8 +400,8 @@ const SoundEntryEditor = (props) => {
 
 SoundEntryEditor.propTypes = {
     sounds: PropTypes.array.isRequired,
-    onItemDelete: PropTypes.func,
-    onItemNameChange: PropTypes.func,
+    onEntryDelete: PropTypes.func,
+    onEntryNameChange: PropTypes.func,
     onItemValueChange: PropTypes.func,
     onAccordionClick: PropTypes.func.isRequired,
     onSoundAddToEntry: PropTypes.func,

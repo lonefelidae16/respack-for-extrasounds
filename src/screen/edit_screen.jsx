@@ -14,6 +14,7 @@ import { StateHandler } from '../util/globals.js';
 import SimpleBoxAnimator from '../components/simple_box_animator.jsx';
 import SimpleDialog from '../components/simple_dialog.jsx';
 import SoundEntryVisualizer from '../components/sound_entry_visualizer.jsx';
+import Arrays from '../util/arrays.js';
 
 const dropAreaDOMSelector = '.edit-json-editor [data-rbd-droppable-id=res-pack]';
 const dropSourceId = 'extra-sounds';
@@ -285,7 +286,9 @@ const EditScreen = (props) => {
         }
         setResSoundsJson(current => {
             const newJson = { ...current };
-            delete newJson[entryName]['sounds'][index];
+            const sounds = newJson[entryName]['sounds'];
+            delete sounds[index];
+            newJson[entryName]['sounds'] = Arrays.filterNonNull(sounds);
             return newJson;
         });
     };
@@ -354,8 +357,8 @@ const EditScreen = (props) => {
                             objects={ resSoundsJson }
                             options={ StateHandler.getSoundNameList() }
                             onItemClick={ handleEditableItemClick }
-                            onItemDelete={ handleEditableItemDelete }
-                            onItemNameChange={ handleEditableItemNameChange }
+                            onEntryDelete={ handleEditableItemDelete }
+                            onEntryNameChange={ handleEditableItemNameChange }
                             onItemValueChange={ handleEditableValueChange }
                             onEntryAdd={ handleAddEntry }
                             onSoundAddToEntry={ handleAddSoundToEntry }

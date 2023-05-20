@@ -67,12 +67,23 @@ class StateHandler {
         tasks.push((async () => {
             await MinecraftAssets.getMCAssetsJsonAsync(this.#minecraftVer)
                 .then(json => {
+                    Object.keys(json['objects'])
+                        .filter(key => !key.endsWith('.ogg'))
+                        .filter(key => key.startsWith('minecraft/sounds/music/'))
+                        .forEach(key => {
+                            delete json['objects'][key];
+                        });
                     this.#vanillaAssetsJson = json;
                 });
         })());
         tasks.push((async () => {
             await MinecraftAssets.getMCSoundsJsonAsync(this.#minecraftVer)
                 .then(json => {
+                    Object.keys(json)
+                        .filter(key => key.startsWith('music.') || key.startsWith('music_disc.'))
+                        .forEach(key => {
+                            delete json[key];
+                        });
                     this.#vanillaSoundsJson = json;
                 });
         })());
@@ -88,11 +99,8 @@ class StateHandler {
             const esSoundNames = Object.keys(this.#modSoundsJson['extrasounds'])
                 .map(value => `extrasounds:${value}`);
             const mcSoundNames = Object.keys(this.#vanillaSoundsJson)
-                .filter(value => !value.startsWith('minecraft/sounds/music/'))
                 .map(value => 'minecraft:'.concat(value));
             const mcSoundFiles = Object.keys(this.#vanillaAssetsJson['objects'])
-                .filter(value => value.endsWith('.ogg'))
-                .filter(value => !value.startsWith('music.') && !value.startsWith('music_disc.'))
                 .map(value => value.replace('minecraft/sounds/', 'minecraft:').replace('.ogg', ''));
 
             this.#allSoundNameList = Arrays.sortedUnique([

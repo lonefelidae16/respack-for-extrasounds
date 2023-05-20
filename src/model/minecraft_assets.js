@@ -69,7 +69,7 @@ export default class MinecraftAssets {
      *
      * @param {SoundsJson} base      The base json object.
      * @param {...SoundsJson} merger Target object array to merge.
-     * @return {SoundsJson} The result.
+     * @return {Promise<SoundsJson>} The result.
      */
     static async mergeSoundsJson(base, ...merger) {
         merger.forEach(json => {
