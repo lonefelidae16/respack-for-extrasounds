@@ -35,16 +35,17 @@
     "Reason:": "詳細:",
 
     "Search Entries": "エントリを検索",
+    "Found %d items": "%d 件のアイテム",
     "Click to add a new entry.": "クリックして新しいエントリを追加します。",
     "Add New Entry": "新しいエントリを追加",
     "Entry Name": "エントリ名",
     "This field is required.": "項目に入力が必要です。",
-
     "This name is already exists.": "このエントリ名はすでに使われています。",
     "Entry": "エントリ",
     "Edit Entry name:": "エントリ名を変更:",
     "Remove this Entry.": "このエントリを削除します。",
     "Sound Name": "サウンド名",
+    "Sound Name cannot be the same its Entry Name.": "サウンド名とエントリ名を同じものにすることはできません。",
     "Volume": "ボリューム",
     "Pitch": "ピッチ",
     "Weight": "ウェイト",

@@ -1,0 +1,231 @@
+# ResourcePack Editor for Extrasounds - Localization template
+# This file is distributed under the same license as the respack-editor-extrasounds package.
+# lonefelidae16 <kow161206@gmail.com>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.2.1-indev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-20 08:57+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app.jsx:80
+msgid "Failed to connect the Official Minecraft server."
+msgstr ""
+
+#: app.jsx:80
+msgid "Try to reload this page?"
+msgstr ""
+
+#: components/es_version_selector.jsx:28 components/es_version_selector.jsx:33
+#: screen/edit_screen.jsx:309
+msgid "version"
+msgstr ""
+
+#: components/input_dialog.jsx:31 components/simple_dialog.jsx:24
+msgid "Cancel"
+msgstr ""
+
+#: components/input_dialog.jsx:32 components/simple_dialog.jsx:25
+msgid "OK"
+msgstr ""
+
+#: components/input_dialog.jsx:78
+msgid "This field is required."
+msgstr ""
+
+#: components/language_selector.jsx:25 components/language_selector.jsx:29
+msgid "Language"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:204
+msgid "Edit Entry name:"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:231
+msgid "Entry"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:235
+msgid "This name is already exists."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:246
+msgid "Remove this Entry."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:277
+msgid "Sound Name"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:280
+msgid "Sound Name cannot be the same its Entry Name."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:287
+msgid "Remove this sound."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:295
+msgid "Volume"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:313
+msgid "Pitch"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:332
+msgid "Weight"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:344
+msgid "If unchecked, this \"Sound Name\" is interpreted as a file."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:347
+msgid "Event"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:353
+msgid "An error occurred..."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:353
+msgid "Play this sound."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:353
+msgid "The result may be different in game."
+msgstr ""
+
+#: components/sound_entry_editor.jsx:369
+msgid "Click to add sound."
+msgstr ""
+
+#: components/sound_entry_visualizer.jsx:142
+#, python-format
+msgid "Found %d items"
+msgstr ""
+
+#: components/sound_entry_visualizer.jsx:180
+msgid "Search Entries"
+msgstr ""
+
+#: components/sound_entry_visualizer.jsx:195
+msgid "Click to add a new entry."
+msgstr ""
+
+#: components/sound_entry_visualizer.jsx:217
+msgid "Add New Entry"
+msgstr ""
+
+#: components/sound_entry_visualizer.jsx:218
+msgid "Entry Name"
+msgstr ""
+
+#: screen/edit_screen.jsx:112
+msgid "Failed to retarget ResourcePack."
+msgstr ""
+
+#: screen/edit_screen.jsx:112
+msgid "Reason:"
+msgstr ""
+
+#: screen/edit_screen.jsx:299
+msgid "Something went wrong..."
+msgstr ""
+
+#: screen/edit_screen.jsx:299
+msgid "Please refresh this page."
+msgstr ""
+
+#: screen/edit_screen.jsx:307
+msgid "ResourcePack info:"
+msgstr ""
+
+#: screen/edit_screen.jsx:327
+msgid "Format"
+msgstr ""
+
+#: screen/edit_screen.jsx:337
+msgid "EXPERIMENTAL: This functionality is not completed yet."
+msgstr ""
+
+#: screen/edit_screen.jsx:338
+msgid "Retarget *"
+msgstr ""
+
+#: screen/edit_screen.jsx:341
+msgid "Download Zip"
+msgstr ""
+
+#: screen/edit_screen.jsx:364
+msgid "ResourcePack"
+msgstr ""
+
+#: screen/edit_screen.jsx:375
+msgid "Retarget ResourcePack"
+msgstr ""
+
+#: screen/edit_screen.jsx:380
+msgid "Execute"
+msgstr ""
+
+#: screen/mobile_screen.jsx:24
+msgid "CAUTION"
+msgstr ""
+
+#: screen/mobile_screen.jsx:25
+msgid "Consider using the Desktop browser."
+msgstr ""
+
+#: screen/mobile_screen.jsx:26
+msgid "This app is not designed for Mobile or Tablet devices."
+msgstr ""
+
+#: screen/mobile_screen.jsx:27
+msgid "Continue anyway"
+msgstr ""
+
+#: screen/start_screen.jsx:65
+msgid "Error while unzipping resource pack."
+msgstr ""
+
+#: screen/start_screen.jsx:68
+msgid "Error while reading resource pack:"
+msgstr ""
+
+#: screen/start_screen.jsx:68
+msgid "Following files are missing or invalid."
+msgstr ""
+
+#: screen/start_screen.jsx:89
+msgid "View source on GitHub"
+msgstr ""
+
+#: screen/start_screen.jsx:94
+msgid "Continue Editing?"
+msgstr ""
+
+#: screen/start_screen.jsx:96
+msgid "Choose Resource Pack"
+msgstr ""
+
+#: screen/start_screen.jsx:102
+msgid "Start Customization."
+msgstr ""
+
+#: screen/start_screen.jsx:104
+msgid "Create New Project"
+msgstr ""
+
+#: screen/start_screen.jsx:109
+msgid "Localization feature is currently under development."
+msgstr ""

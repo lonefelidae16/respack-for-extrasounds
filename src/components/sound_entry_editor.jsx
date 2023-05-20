@@ -43,6 +43,7 @@ const SoundEntryEditor = (props) => {
     const [volume, setVolume] = useState(sounds.map(entry => entry['volume'] ?? 1));
     const [pitch, setPitch] = useState(sounds.map(entry => entry['pitch'] ?? 1));
     const [isEvent, setEvent] = useState(sounds.map(entry => entry['type'] === 'event'));
+    const [isInfiniteLoopSound, setInfiniteLoopSound] = useState([...Array(entry.length)].map(() => false));
 
     const isEntryNameValid = () => {
         return !entryNameDuplicate && !entryNameEmpty;
@@ -65,14 +66,14 @@ const SoundEntryEditor = (props) => {
      */
     const handleEntryNameEditor = (ev) => {
         if (ev.key.match(/^enter$/i)) {
-            handleItemNameChange(currentEntryName);
+            handleEntryNameChange(currentEntryName);
         }
         if (ev.key.match(/^escape$/i)) {
-            handleItemNameChange(null);
+            handleEntryNameChange(null);
         }
     };
 
-    const handleEntryNameChange = (newValue) => {
+    const checkEntryName = (newValue) => {
         setCurrentEntryName(newValue);
         if (entry === newValue) {
             setEntryNameDuplicate(false);
@@ -82,7 +83,7 @@ const SoundEntryEditor = (props) => {
         setEntryNameEmpty(newValue.length === 0);
     };
 
-    const handleItemNameChange = (newName) => {
+    const handleEntryNameChange = (newName) => {
         if (onItemNameChange && newName !== null && isEntryNameValid()) {
             onItemNameChange(entry, newName);
         }
@@ -103,8 +104,14 @@ const SoundEntryEditor = (props) => {
         }
     };
 
+    /**
+     *
+     * @param {number} index
+     * @param {string} value
+     */
     const handleSoundNameChange = (index, value) => {
         value = (value) ?? '';
+        const isEventSound = StateHandler.isEventSoundName(value);
         setSoundName(current => {
             const newNames = [...current];
             newNames[index] = value;
@@ -112,9 +119,21 @@ const SoundEntryEditor = (props) => {
         });
         setEvent(current => {
             const newEvents = [...current];
-            newEvents[index] = StateHandler.isEventSoundName(value);
+            newEvents[index] = isEventSound;
             return newEvents;
         });
+        if (value.startsWith('extrasounds:') && isEventSound) {
+            const [, path] = value.split(':');
+            const isInfiniteDetected = (path === entry);
+            setInfiniteLoopSound(current => {
+                const newValue = [...current];
+                newValue[index] = isInfiniteDetected;
+                return newValue;
+            });
+            if (isInfiniteDetected) {
+                return;
+            }
+        }
         handleValueChange({ soundEntry: entry, soundEntryIndex: index, property: 'name', value });
     };
 
@@ -164,22 +183,11 @@ const SoundEntryEditor = (props) => {
         if (onSoundAddToEntry) {
             onSoundAddToEntry(entry);
         }
-        setSoundName(current => {
-            const newSounds = [...current, ''];
-            return newSounds;
-        });
-        setVolume(current => {
-            const newVols = [...current, 1];
-            return newVols;
-        });
-        setPitch(current => {
-            const newPitches = [...current, 1];
-            return newPitches;
-        });
-        setEvent(current => {
-            const newEvents = [...current, false];
-            return newEvents;
-        });
+        setSoundName(current => [...current, '']);
+        setVolume(current => [...current, 1]);
+        setPitch(current => [...current, 1]);
+        setEvent(current => [...current, false]);
+        setInfiniteLoopSound(current => [...current, false]);
     };
 
     const handleRemoveSound = (index) => {
@@ -214,9 +222,9 @@ const SoundEntryEditor = (props) => {
                                 disableListWrap
                                 PopperComponent={ Popper }
                                 ListboxComponent={ ListboxComponent }
-                                onChange={ (ev, newValue) => handleEntryNameChange(newValue) }
-                                onInputChange={ (ev, newValue) => handleEntryNameChange(newValue) }
-                                onBlur={ () => handleItemNameChange(currentEntryName) }
+                                onChange={ (ev, newValue) => checkEntryName(newValue) }
+                                onInputChange={ (ev, newValue) => checkEntryName(newValue) }
+                                onBlur={ () => handleEntryNameChange(currentEntryName) }
                                 renderInput={ params =>
                                     <TextField
                                         { ...params }
@@ -263,7 +271,15 @@ const SoundEntryEditor = (props) => {
                                 disabled={ !editable }
                                 onChange={ (ev, newValue) => handleSoundNameChange(index, newValue) }
                                 onInputChange={ (ev, newValue) => handleSoundNameChange(index, newValue) }
-                                renderInput={ params => <TextField { ...params } label={ t('Sound Name') } variant='standard' /> }
+                                renderInput={ params =>
+                                    <TextField
+                                        { ...params }
+                                        label={ t('Sound Name') }
+                                        variant='standard'
+                                        error={ isInfiniteLoopSound[index] }
+                                        helperText={ (isInfiniteLoopSound[index]) ? t('Sound Name cannot be the same its Entry Name.') : '' }
+                                    />
+                                }
                                 renderOption={ (props, option, state) => [props, option, state.index] }
                                 renderGroup={ (params) => params }
                             />

@@ -60,6 +60,7 @@ const EditScreen = (props) => {
     const [retargetDlgOpen, setRetargetDlgOpen] = useState(false);
     /** @type {[React.JSX.Element, React.Dispatch<React.JSX.Element>]} */
     const [someError, setSomeError] = useState(null);
+    const [destinationSelectedItem, setDestinationSelectedItem] = useState('');
 
     const { t } = useTranslation();
 
@@ -154,6 +155,8 @@ const EditScreen = (props) => {
                 newJson[entryName]['replace'] = true;
                 return newJson;
             });
+        } else {
+            setDestinationSelectedItem(entryName);
         }
     };
 
@@ -361,6 +364,7 @@ const EditScreen = (props) => {
                             title={ t('ResourcePack') }
                             id={ dropDestinationId }
                             limitCount={ 10 }
+                            searchFilter={ destinationSelectedItem }
                             editable
                         />
                     </DragDropContext>
