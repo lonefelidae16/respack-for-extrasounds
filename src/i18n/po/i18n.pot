@@ -5,9 +5,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.2.1-indev\n"
+"Project-Id-Version: respack-editor-extrasounds 0.2.2-indev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-20 08:57+0900\n"
+"POT-Creation-Date: 2023-05-20 11:03+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "Try to reload this page?"
 msgstr ""
 
 #: components/es_version_selector.jsx:28 components/es_version_selector.jsx:33
-#: screen/edit_screen.jsx:309
+#: screen/edit_screen.jsx:312
 msgid "version"
 msgstr ""
 
@@ -45,67 +45,67 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:204
+#: components/sound_entry_editor.jsx:225
 msgid "Edit Entry name:"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:231
+#: components/sound_entry_editor.jsx:252
 msgid "Entry"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:235
+#: components/sound_entry_editor.jsx:256
 msgid "This name is already exists."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:246
+#: components/sound_entry_editor.jsx:267
 msgid "Remove this Entry."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:277
+#: components/sound_entry_editor.jsx:298
 msgid "Sound Name"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:280
+#: components/sound_entry_editor.jsx:301
 msgid "Sound Name cannot be the same its Entry Name."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:287
+#: components/sound_entry_editor.jsx:308
 msgid "Remove this sound."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:295
+#: components/sound_entry_editor.jsx:316
 msgid "Volume"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:313
+#: components/sound_entry_editor.jsx:334
 msgid "Pitch"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:332
+#: components/sound_entry_editor.jsx:353
 msgid "Weight"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:344
+#: components/sound_entry_editor.jsx:365
 msgid "If unchecked, this \"Sound Name\" is interpreted as a file."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:347
+#: components/sound_entry_editor.jsx:368
 msgid "Event"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:353
+#: components/sound_entry_editor.jsx:374
 msgid "An error occurred..."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:353
+#: components/sound_entry_editor.jsx:374
 msgid "Play this sound."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:353
+#: components/sound_entry_editor.jsx:374
 msgid "The result may be different in game."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:369
+#: components/sound_entry_editor.jsx:390
 msgid "Click to add sound."
 msgstr ""
 
@@ -130,51 +130,51 @@ msgstr ""
 msgid "Entry Name"
 msgstr ""
 
-#: screen/edit_screen.jsx:112
+#: screen/edit_screen.jsx:113
 msgid "Failed to retarget ResourcePack."
 msgstr ""
 
-#: screen/edit_screen.jsx:112
+#: screen/edit_screen.jsx:113
 msgid "Reason:"
 msgstr ""
 
-#: screen/edit_screen.jsx:299
+#: screen/edit_screen.jsx:302
 msgid "Something went wrong..."
 msgstr ""
 
-#: screen/edit_screen.jsx:299
+#: screen/edit_screen.jsx:302
 msgid "Please refresh this page."
 msgstr ""
 
-#: screen/edit_screen.jsx:307
+#: screen/edit_screen.jsx:310
 msgid "ResourcePack info:"
 msgstr ""
 
-#: screen/edit_screen.jsx:327
+#: screen/edit_screen.jsx:330
 msgid "Format"
 msgstr ""
 
-#: screen/edit_screen.jsx:337
+#: screen/edit_screen.jsx:340
 msgid "EXPERIMENTAL: This functionality is not completed yet."
 msgstr ""
 
-#: screen/edit_screen.jsx:338
+#: screen/edit_screen.jsx:341
 msgid "Retarget *"
 msgstr ""
 
-#: screen/edit_screen.jsx:341
+#: screen/edit_screen.jsx:344
 msgid "Download Zip"
 msgstr ""
 
-#: screen/edit_screen.jsx:364
+#: screen/edit_screen.jsx:367
 msgid "ResourcePack"
 msgstr ""
 
-#: screen/edit_screen.jsx:375
+#: screen/edit_screen.jsx:378
 msgid "Retarget ResourcePack"
 msgstr ""
 
-#: screen/edit_screen.jsx:380
+#: screen/edit_screen.jsx:383
 msgid "Execute"
 msgstr ""
 
