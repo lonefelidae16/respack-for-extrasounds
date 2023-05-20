@@ -1,7 +1,7 @@
 {
     "name": "respack-editor-extrasounds",
-    "version": "0.2.1-indev",
-    "description": "Minecraft's ResourcePack Editor for ExtraSounds",
+    "version": "0.2.2-indev",
+    "description": "ResourcePack Editor for ExtraSounds",
     "scripts": {
         "build": "npx webpack",
         "watch": "npx webpack --mode=development --watch",
