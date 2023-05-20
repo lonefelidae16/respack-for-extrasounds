@@ -13,6 +13,23 @@ All notable changes to this project will be documented in this file.
 <!--* <small>_Any bugs/issues will be written here when found._</small>-->
 * Retarget ResourcePack feature is still work in progress.
 
+## [0.2.2-indev] - 2023-05-20 JST
+### ✨ Added
+* If ResourcePack contains source entry and when be clicked, focus it and open accordion.
+* Check if the sound entry makes infinite loop.<br>
+  This will be caused both entry and sound have the same name
+  (such as `action.bow` includes `extrasounds:action.bow` and its type is marked as Event).
+
+### 🔧 Fixed
+* CORS check update in `curl.php` for proxy site.
+* Limit the item count for the searched results.
+* More carefully to handle sound entries.
+
+### 👷 Technical
+
+* Add shell script `po2json.sh` to convert from GNU Gettext (`po`) format to json.
+* Add pot template to make easy localization.
+
 ## [0.2.1-indev] - 2023-05-19 JST
 ### 🔧 Fixed
 
