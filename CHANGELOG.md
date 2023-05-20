@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 <!--* <small>_Any bugs/issues will be written here when found._</small>-->
 * Retarget ResourcePack feature is still work in progress.
 
+## [0.2.2-indev.1] - 2023-05-20 JST
+### 🔥 Hotfix
+* Asset fetch algorism has been changed.
+
 ## [0.2.2-indev] - 2023-05-20 JST
 ### ✨ Added
 * If ResourcePack contains source entry and when be clicked, focus it and open accordion.
@@ -27,7 +31,7 @@ All notable changes to this project will be documented in this file.
 
 ### 👷 Technical
 
-* Add shell script `po2json.sh` to convert from GNU Gettext (`po`) format to json.
+* Add shell script `po2json.sh` that converts from GNU Gettext (`po`) format to json.
 * Add pot template to make easy localization.
 
 ## [0.2.1-indev] - 2023-05-19 JST
