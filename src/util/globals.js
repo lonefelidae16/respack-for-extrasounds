@@ -68,8 +68,7 @@ class StateHandler {
             await MinecraftAssets.getMCAssetsJsonAsync(this.#minecraftVer)
                 .then(json => {
                     Object.keys(json['objects'])
-                        .filter(key => !key.endsWith('.ogg'))
-                        .filter(key => key.startsWith('minecraft/sounds/music/'))
+                        .filter(key => !key.endsWith('.ogg') || key.startsWith('minecraft/sounds/music/'))
                         .forEach(key => {
                             delete json['objects'][key];
                         });
