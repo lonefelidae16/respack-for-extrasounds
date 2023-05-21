@@ -15,6 +15,7 @@ import SimpleBoxAnimator from '../components/simple_box_animator.jsx';
 import SimpleDialog from '../components/simple_dialog.jsx';
 import SoundEntryVisualizer from '../components/sound_entry_visualizer.jsx';
 import Arrays from '../util/arrays.js';
+import MinecraftAssets from '../model/minecraft_assets.js';
 
 const dropAreaDOMSelector = '.edit-json-editor [data-rbd-droppable-id=res-pack]';
 const dropSourceId = 'extra-sounds';
@@ -92,10 +93,16 @@ const EditScreen = (props) => {
      * Gets the Zip and unregisters unloading dialog.
      */
     const onPackDownload = () => {
-        unregisterUnloadConfirmation();
-        const resPack = StateHandler.getResourcePack();
-        resPack.soundsJson = resSoundsJson;
-        resPack.generateZip();
+        MinecraftAssets.getEmptySoundEntry(resSoundsJson).then(result => {
+            if (result.length === 0) {
+                unregisterUnloadConfirmation();
+                const resPack = StateHandler.getResourcePack();
+                resPack.soundsJson = resSoundsJson;
+                resPack.generateZip();
+            } else {
+                setDestinationSelectedItem(result[0]);
+            }
+        });
     };
 
     /**

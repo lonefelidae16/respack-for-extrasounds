@@ -83,4 +83,16 @@ export default class MinecraftAssets {
         });
         return base;
     }
+
+    /**
+     * Returns string array that contains empty sounds.
+     *
+     * @param {SoundsJson} soundsJson Target json object.
+     * @returns String array in Promise.
+     */
+    static async getEmptySoundEntry(soundsJson) {
+        return Object.keys(soundsJson).filter(entry => {
+            return soundsJson[entry]['sounds'].filter(sound => !sound['name']);
+        });
+    }
 }

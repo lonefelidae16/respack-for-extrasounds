@@ -5,8 +5,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Checkbox, Divider, FormControlLabel, IconButton, List, Popper, Slider, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { Delete, Edit, LibraryAdd, MusicNoteOutlined, MusicOff, RemoveCircle } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Checkbox, Divider, FormControlLabel, IconButton, List, Popper, Slider, Stack, TextField, Tooltip } from '@mui/material';
+import { Delete, Edit, Error, LibraryAdd, MusicNoteOutlined, MusicOff, RemoveCircle } from '@mui/icons-material';
 
 import ListboxComponent from './listbox_component.jsx';
 
@@ -189,6 +189,7 @@ const SoundEntryEditor = (props) => {
         setPitch(current => [...current, 1]);
         setEvent(current => [...current, false]);
         setInfiniteLoopSound(current => [...current, false]);
+        setTimeout(() => document.getElementById(`${classNamePrefix}-${entry}-sound${sounds.length - 1}-name`).focus(), 66);
     };
 
     const handleRemoveSound = (index) => {
@@ -233,7 +234,10 @@ const SoundEntryEditor = (props) => {
                         </Tooltip>
                     </div>
                     <div className={ `${classNamePrefix}-entry-name` }>
-                        <Typography hidden={ entryNameEditorShow }>{entry}</Typography>
+                        <div hidden={ entryNameEditorShow }>
+                            {entry}
+                            <Box component='small' hidden={ soundName.every(name => name) } className='error-msg'><Error sx={ { width: '0.75em', height: '0.75em', marginLeft: '1em' } } /> {t('This Entry contains some empty Sound Name.')}</Box>
+                        </div>
                         <div hidden={ !entryNameEditorShow } onClick={ (ev) => ev.stopPropagation() }>
                             <Autocomplete
                                 options={ StateHandler.getExtraSoundsEntryList() }
@@ -284,6 +288,7 @@ const SoundEntryEditor = (props) => {
                                 value={ soundName[index] }
                                 options={ StateHandler.getSoundNameList() }
                                 fullWidth
+                                id={ `${classNamePrefix}-${entry}-sound${index}-name` }
                                 isOptionEqualToValue={ (option, value) => option === value }
                                 disableListWrap
                                 PopperComponent={ Popper }
@@ -297,7 +302,7 @@ const SoundEntryEditor = (props) => {
                                         { ...params }
                                         label={ t('Sound Name') }
                                         variant='standard'
-                                        error={ isInfiniteLoopSound[index] }
+                                        error={ isInfiniteLoopSound[index] || !soundName[index] }
                                         helperText={ (isInfiniteLoopSound[index]) ? t('Sound Name cannot be the same its Entry Name.') : '' }
                                     />
                                 }
