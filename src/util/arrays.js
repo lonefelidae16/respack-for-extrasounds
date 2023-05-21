@@ -12,7 +12,7 @@ export default class Arrays {
     }
 
     /**
-     * Removes duplicate values and sortes for string array.
+     * Removes duplicate values and sorts for string array.
      *
      * @param {string[]} array Target array.
      * @returns The filtered and sorted array.
@@ -29,5 +29,16 @@ export default class Arrays {
      */
     static filterNonNull(array) {
         return array.filter(n => n !== null && n !== undefined);
+    }
+
+    /**
+     * The wrapper function that sorting with string#localeCompare().
+     *
+     * @param {string[]} targetArray Target array to sort.
+     * @param {boolean} descending   If true, first element will be latest one. default: true
+     * @returns {string[]} Sorted array.
+     */
+    static versionSort(targetArray, descending = true) {
+        return targetArray.slice().sort((a, b) => (descending ? 1 : -1) * b.localeCompare(a, [], { numeric: true }));
     }
 }

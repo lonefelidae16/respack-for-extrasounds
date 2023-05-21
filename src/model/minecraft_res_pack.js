@@ -8,7 +8,7 @@
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 
-import { versionSort } from '../util/versions.js';
+import Arrays from '../util/arrays.js';
 
 const mcPackVersions = {};
 fetch('https://api.github.com/gists/db752e2c19505c6b0e4cc4a944da3dc0')
@@ -126,7 +126,7 @@ export default class MinecraftResPack {
      * @param {string} targetMCVer Minecraft version.
      */
     setPackFormatFromMCVer(targetMCVer = 'latest') {
-        const versions = versionSort(Object.keys(mcPackVersions));
+        const versions = Arrays.versionSort(Object.keys(mcPackVersions));
         if (targetMCVer === 'latest') {
             targetMCVer = versions[0];
         }

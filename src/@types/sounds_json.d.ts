@@ -16,7 +16,7 @@ interface Sounds {
 }
 
 interface SoundsJson {
-    [key: string]: Sounds;
+    [entry: string]: Sounds;
 }
 
 export { SoundEntry, Sounds, SoundsJson };

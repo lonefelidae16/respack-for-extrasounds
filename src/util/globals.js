@@ -79,8 +79,11 @@ class StateHandler {
             await MinecraftAssets.getMCSoundsJsonAsync(this.#minecraftVer)
                 .then(json => {
                     Object.keys(json)
-                        .filter(key => key.startsWith('music.') || key.startsWith('music_disc.'))
-                        .forEach(key => {
+                        .filter(key => {
+                            const isMusic = key.startsWith('music.') || key.startsWith('music_disc.');
+                            const containsStream = json[key]['sounds'].filter(sound => sound['stream']).length > 0;
+                            return isMusic || containsStream;
+                        }).forEach(key => {
                             delete json[key];
                         });
                     this.#vanillaSoundsJson = json;
