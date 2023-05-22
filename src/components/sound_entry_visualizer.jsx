@@ -162,7 +162,7 @@ const SoundEntryVisualizer = (props) => {
                 <SoundEntryEditor
                     { ...props }
                     key={ key }
-                    entry={ key }
+                    entryName={ key }
                     sounds={ objects[key]['sounds'] }
                     onAccordionClick={ handleAccordionClick }
                     isOpen={ openedAccordion === key }

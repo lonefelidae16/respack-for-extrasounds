@@ -92,7 +92,7 @@ export default class MinecraftAssets {
      */
     static async getEmptySoundEntry(soundsJson) {
         return Object.keys(soundsJson).filter(entry => {
-            return soundsJson[entry]['sounds'].filter(sound => !sound['name']);
+            return soundsJson[entry]['sounds'].some(sound => !sound['name']);
         });
     }
 }

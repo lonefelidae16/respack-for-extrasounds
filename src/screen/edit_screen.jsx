@@ -239,11 +239,7 @@ const EditScreen = (props) => {
             } else {
                 target[property] = value;
             }
-            setResSoundsJson(current => {
-                const newJson = { ...current };
-                newJson[soundEntry]['sounds'][soundEntryIndex] = target;
-                return newJson;
-            });
+            resSoundsJson[soundEntry]['sounds'][soundEntryIndex] = target;
         } catch {
             // ignored statement.
             undefined;

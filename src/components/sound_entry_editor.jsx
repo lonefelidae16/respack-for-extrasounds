@@ -18,7 +18,7 @@ const classNamePrefix = 'sound-entry-editor';
 /**
  * @param {{
  *      sounds: SoundEntry[] | string[],
- *      entry: string,
+ *      entryName: string,
  *      onEntryDelete: (value: string) => void,
  *      onEntryNameChange: (before: string, after: string) => void,
  *      onItemValueChange: (obj: {soundKey: string, soundEntryIndex: number, property: string, value: any}) => void,
@@ -32,10 +32,10 @@ const classNamePrefix = 'sound-entry-editor';
  */
 const SoundEntryEditor = (props) => {
     const { t } = useTranslation();
-    const { sounds, entry, onEntryDelete, onEntryNameChange, onItemValueChange, onAccordionClick,
+    const { sounds, entryName, onEntryDelete, onEntryNameChange, onItemValueChange, onAccordionClick,
         onSoundAddToEntry, onSoundRemoveFromEntry, checkEntryExists, editable, isOpen } = props;
     const [entryNameEditorShow, setEntryNameEditorShow] = useState(false);
-    const [currentEntryName, setCurrentEntryName] = useState(entry);
+    const [currentEntryName, setCurrentEntryName] = useState(entryName);
     const [entryNameDuplicate, setEntryNameDuplicate] = useState(false);
     const [entryNameEmpty, setEntryNameEmpty] = useState(false);
     const [playing, setPlaying] = useState(false);
@@ -76,7 +76,7 @@ const SoundEntryEditor = (props) => {
 
     const checkEntryName = (newValue) => {
         setCurrentEntryName(newValue);
-        if (entry === newValue) {
+        if (entryName === newValue) {
             setEntryNameDuplicate(false);
         } else if (checkEntryExists) {
             setEntryNameDuplicate(checkEntryExists(newValue));
@@ -86,7 +86,7 @@ const SoundEntryEditor = (props) => {
 
     const handleEntryNameChange = (newName) => {
         if (onEntryNameChange && newName !== null && isEntryNameValid()) {
-            onEntryNameChange(entry, newName);
+            onEntryNameChange(entryName, newName);
         }
         setEntryNameEditorShow(false);
     };
@@ -125,7 +125,7 @@ const SoundEntryEditor = (props) => {
         });
         if (value.startsWith('extrasounds:') && isEventSound) {
             const [, path] = value.split(':');
-            const isInfiniteDetected = (path === entry);
+            const isInfiniteDetected = (path === entryName);
             setInfiniteLoopSound(current => {
                 const newValue = [...current];
                 newValue[index] = isInfiniteDetected;
@@ -135,7 +135,7 @@ const SoundEntryEditor = (props) => {
                 return;
             }
         }
-        handleValueChange({ soundEntry: entry, soundEntryIndex: index, property: 'name', value });
+        handleValueChange({ soundEntry: entryName, soundEntryIndex: index, property: 'name', value });
     };
 
     const handleVolumeChange = (index, value) => {
@@ -160,7 +160,7 @@ const SoundEntryEditor = (props) => {
             newEvents[index] = checked;
             return newEvents;
         });
-        handleValueChange({ soundEntry: entry, soundEntryIndex: index, property: 'type', value: (checked ? 'event' : null) });
+        handleValueChange({ soundEntry: entryName, soundEntryIndex: index, property: 'type', value: (checked ? 'event' : null) });
     };
 
     const handlePlaySound = (index) => {
@@ -182,19 +182,19 @@ const SoundEntryEditor = (props) => {
 
     const handleAddSound = () => {
         if (onSoundAddToEntry) {
-            onSoundAddToEntry(entry);
+            onSoundAddToEntry(entryName);
         }
         setSoundName(current => [...current, '']);
         setVolume(current => [...current, 1]);
         setPitch(current => [...current, 1]);
         setEvent(current => [...current, false]);
         setInfiniteLoopSound(current => [...current, false]);
-        setTimeout(() => document.getElementById(`${classNamePrefix}-${entry}-sound${sounds.length - 1}-name`).focus(), 66);
+        setTimeout(() => document.getElementById(`${classNamePrefix}-${entryName}-sound${sounds.length - 1}-name`).focus(), 66);
     };
 
     const handleRemoveSound = (index) => {
         if (onSoundRemoveFromEntry) {
-            onSoundRemoveFromEntry(entry, index);
+            onSoundRemoveFromEntry(entryName, index);
         }
         setSoundName(current => {
             delete current[index];
@@ -220,13 +220,13 @@ const SoundEntryEditor = (props) => {
 
     return (
         <Accordion expanded={ isOpen }>
-            <AccordionSummary onClick={ () => handleListItemClick(entry) }>
+            <AccordionSummary onClick={ () => handleListItemClick(entryName) }>
                 <div className={ `${classNamePrefix}-accordion-wrapper` }>
                     <div hidden={ !editable } className={ `${classNamePrefix}-edit-entry` }>
-                        <Tooltip title={ `${t('Edit Entry name:')} "${entry}"` } arrow>
+                        <Tooltip title={ `${t('Edit Entry name:')} "${entryName}"` } arrow>
                             <IconButton onClick={ (ev) => {
                                 setEntryNameEditorShow(true);
-                                setTimeout(() => document.getElementById(`${classNamePrefix}-${entry}`).focus(), 66);
+                                setTimeout(() => document.getElementById(`${classNamePrefix}-${entryName}`).focus(), 66);
                                 ev.stopPropagation();
                             } }>
                                 <Edit />
@@ -235,14 +235,14 @@ const SoundEntryEditor = (props) => {
                     </div>
                     <div className={ `${classNamePrefix}-entry-name` }>
                         <div hidden={ entryNameEditorShow }>
-                            {entry}
+                            {entryName}
                             <Box component='small' hidden={ soundName.every(name => name) } className='error-msg'><Error sx={ { width: '0.75em', height: '0.75em', marginLeft: '1em' } } /> {t('This Entry contains some empty Sound Name.')}</Box>
                         </div>
                         <div hidden={ !entryNameEditorShow } onClick={ (ev) => ev.stopPropagation() }>
                             <Autocomplete
                                 options={ StateHandler.getExtraSoundsEntryList() }
                                 value={ currentEntryName }
-                                id={ `${classNamePrefix}-${entry}` }
+                                id={ `${classNamePrefix}-${entryName}` }
                                 isOptionEqualToValue={ (option, value) => option === value }
                                 disableListWrap
                                 PopperComponent={ Popper }
@@ -270,7 +270,7 @@ const SoundEntryEditor = (props) => {
                     <div hidden={ !editable } className={ `${classNamePrefix}-remove-entry` }>
                         <Tooltip title={ t('Remove this Entry.') } arrow>
                             <IconButton onClick={ (ev) => {
-                                handleEntryDelete(entry);
+                                handleEntryDelete(entryName);
                                 ev.stopPropagation();
                             } }>
                                 <Delete color='error' />
@@ -281,14 +281,14 @@ const SoundEntryEditor = (props) => {
             </AccordionSummary>
             <AccordionDetails>
                 {sounds.map((soundEntry, index) => (
-                    <List key={ `${entry}-sound${index}` }>
+                    <List key={ `${entryName}-sound${index}` }>
                         <Stack direction='row' sx={ { alignItems: 'center' } }>
                             <Autocomplete
                                 size='small'
                                 value={ soundName[index] }
                                 options={ StateHandler.getSoundNameList() }
                                 fullWidth
-                                id={ `${classNamePrefix}-${entry}-sound${index}-name` }
+                                id={ `${classNamePrefix}-${entryName}-sound${index}-name` }
                                 isOptionEqualToValue={ (option, value) => option === value }
                                 disableListWrap
                                 PopperComponent={ Popper }
@@ -331,7 +331,7 @@ const SoundEntryEditor = (props) => {
                                     { value: 1.0, label: '1.0' },
                                 ] }
                                 onChange={ (ev, value) => handleVolumeChange(index, value) }
-                                onChangeCommitted={ (ev, value) => handleValueChange({ soundEntry: entry, soundEntryIndex: index, property: 'volume', value }) }
+                                onChangeCommitted={ (ev, value) => handleValueChange({ soundEntry: entryName, soundEntryIndex: index, property: 'volume', value }) }
                                 disabled={ !editable }
                             />
                         </Stack>
@@ -350,7 +350,7 @@ const SoundEntryEditor = (props) => {
                                 ] }
                                 color='secondary'
                                 onChange={ (ev, value) => handlePitchChange(index, value) }
-                                onChangeCommitted={ (ev, value) => handleValueChange({ soundEntry: entry, soundEntryIndex: index, property: 'pitch', value }) }
+                                onChangeCommitted={ (ev, value) => handleValueChange({ soundEntry: entryName, soundEntryIndex: index, property: 'pitch', value }) }
                                 disabled={ !editable }
                             />
                         </Stack>
@@ -412,7 +412,7 @@ SoundEntryEditor.propTypes = {
     onSoundAddToEntry: PropTypes.func,
     onSoundRemoveFromEntry: PropTypes.func,
     checkEntryExists: PropTypes.func,
-    entry: PropTypes.string.isRequired,
+    entryName: PropTypes.string.isRequired,
     editable: PropTypes.bool,
     isOpen: PropTypes.bool,
 };
