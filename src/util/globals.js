@@ -280,6 +280,10 @@ class StateHandler {
     static getVanillaSoundsJson() {
         return this.#vanillaSoundsJson;
     }
+
+    static getMinecraftVersion() {
+        return this.#minecraftVer;
+    }
 }
 
 export { StateHandler };
