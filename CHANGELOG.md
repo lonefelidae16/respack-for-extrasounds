@@ -13,6 +13,13 @@ All notable changes to this project will be documented in this file.
 <!--* <small>_Any bugs/issues will be written here when found._</small>-->
 * Retarget ResourcePack feature is still work in progress.
 
+## [0.2.3-indev] - 2023-06-08 JST
+### ✨ Added
+* Supports Minecraft 1.20.
+
+### 🔧 Fixed
+* Check if the sound entry contains empty sound name when generating zip.
+
 ## [0.2.2-indev.1] - 2023-05-20 JST
 ### 🔥 Hotfix
 * Asset fetch algorism has been changed.
@@ -61,7 +68,7 @@ All notable changes to this project will be documented in this file.
 * Missing translations on EditScreen.
 * Disallow to register an empty entry name to `sounds.json`.
 * CORS check fix in `curl.php`.
-* Now uses `structedClone` instead of shallow copy when modifying `sounds.json`.
+* Now uses `structuredClone` instead of shallow copy when modifying `sounds.json`.
 
 ### 👷 Technical
 
