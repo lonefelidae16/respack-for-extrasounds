@@ -42,10 +42,11 @@ const StartScreen = (props) => {
      * Calls the App#onCreateProject.
      *
      * @param {MinecraftResPack} currentPack Target ResourcePack.
+     * @param {string} esVer                 Target ExtraSounds version.
      */
-    const createProject = (currentPack) => {
+    const createProject = (currentPack, esVer) => {
         setResPackError(null);
-        onCreateProject(currentPack, extraSoundsVer);
+        onCreateProject(currentPack, esVer);
     };
 
     /**
@@ -68,8 +69,7 @@ const StartScreen = (props) => {
                 setResPackError(<>{t('Error while reading resource pack:')}<br />{t('Following files are missing or invalid.')}<br /><code>assets/extrasounds/sounds.json</code></>);
                 onChangeWaitState(false);
             } else {
-                setExtraSoundsVer(ExtraSounds.getLatestRevFromMCVer(resPack.getMCVerFromPackFormat()));
-                createProject(resPack);
+                createProject(resPack, ExtraSounds.getLatestRevFromMCVer(resPack.getMCVer()));
             }
         });
     };
@@ -80,8 +80,10 @@ const StartScreen = (props) => {
     const onCreateBlank = () => {
         onChangeWaitState(true);
         const newPack = new MinecraftResPack();
-        newPack.setPackFormatFromMCVer(ExtraSounds.getCompatMCVerFromExtraSoundsVer(extraSoundsVer));
-        createProject(newPack);
+        const mcVer = ExtraSounds.getCompatMCVerFromExtraSoundsVer(extraSoundsVer);
+        newPack.setPackFormatFromMCVer(mcVer);
+        newPack.setMCVer(mcVer);
+        createProject(newPack, extraSoundsVer);
     };
 
     return (hidden) ? null : (

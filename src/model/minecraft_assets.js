@@ -12,6 +12,8 @@ const manifestUri = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.
 const resourcesUriTemplate = 'https://resources.download.minecraft.net/${first2Letter}/${hash}';
 
 export default class MinecraftAssets {
+    static latestVerStr = 'latest';
+
     /**
      * Parses the uri from file hash.
      *
@@ -30,13 +32,13 @@ export default class MinecraftAssets {
      * @param {string} mcVersion Target Minecraft version.
      * @returns {Promise<AssetsJson>} The json objects.
      */
-    static async getMCAssetsJsonAsync(mcVersion = 'latest') {
+    static async getMCAssetsJsonAsync(mcVersion = this.latestVerStr) {
         return curlFetch(manifestUri)
             .then(response => response.json())
             .then(json => {
                 let versJsonUri = undefined;
-                if (mcVersion === 'latest') {
-                    mcVersion = json['latest']['release'];
+                if (mcVersion === this.latestVerStr) {
+                    mcVersion = json[this.latestVerStr]['release'];
                 }
                 json['versions'].forEach(version => {
                     if (version['id'] !== mcVersion) {

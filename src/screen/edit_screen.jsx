@@ -323,7 +323,7 @@ const EditScreen = (props) => {
                         <TextField
                             label='Minecraft'
                             id='mc-ver'
-                            value={ StateHandler.getMinecraftVersion() }
+                            value={ StateHandler.getResourcePack().getMCVer() }
                             size='small'
                             variant='standard'
                             disabled

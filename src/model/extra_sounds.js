@@ -3,6 +3,8 @@
 /** @typedef {import('../@types/sounds_json.js').SoundsJson} SoundsJson */
 
 import MathHelper from '../util/math_helper.js';
+import MinecraftAssets from './minecraft_assets.js';
+import Arrays from '../util/arrays.js';
 
 const soundsJsonUriTemplate = 'https://api.github.com/repos/lonefelidae16/extra-sounds/contents/src/main/resources/assets/extrasounds/sounds.json?ref=${revision}';
 const soundsSchemaJsonUriTemplate = 'https://api.github.com/repos/lonefelidae16/extra-sounds/contents/schemas/sound-schema.json?ref=${revision}';
@@ -107,7 +109,7 @@ export default class ExtraSounds {
      * @returns Minecraft version string.
      */
     static getCompatMCVerFromExtraSoundsVer(esVer = this.defaultRef) {
-        let mcVer = 'latest';
+        let mcVer = MinecraftAssets.latestVerStr;
         this.revisions.forEach(tag => {
             if (tag['tag'] !== esVer) {
                 return;
@@ -122,15 +124,10 @@ export default class ExtraSounds {
      * @param {string} mcVer Target Minecraft version.
      * @returns ExtraSounds revision string.
      */
-    static getLatestRevFromMCVer(mcVer = 'latest') {
-        let esVer = this.defaultRef;
-        this.revisions.forEach(tag => {
-            if (tag['minecraft_version'] !== mcVer) {
-                return;
-            }
-            esVer = tag['tag'];
-        });
-        return esVer;
+    static getLatestRevFromMCVer(mcVer = MinecraftAssets.latestVerStr) {
+        const filtered = this.revisions.filter(rev => rev['minecraft_version'] === mcVer);
+        const tags = Arrays.versionSort(filtered.map(rev => rev['tag']));
+        return tags[0] ?? this.defaultRef;
     }
 
     /**

@@ -16,8 +16,6 @@ class StateHandler {
     static #resourcePack = undefined;
     /** @type {string} */
     static #extraSoundsVer;
-    /** @type {string} */
-    static #minecraftVer;
     /** @type {AssetsJson} */
     static #vanillaAssetsJson = {};
     /** @type {string[]} */
@@ -53,7 +51,6 @@ class StateHandler {
         this.#vanillaSoundsJson = {};
         this.#modSoundsJson = {};
         this.#extraSoundsVer = '';
-        this.#minecraftVer = '';
     }
 
     /**
@@ -62,10 +59,10 @@ class StateHandler {
      * @returns {Promise<void>} The task.
      */
     static async refreshJsonAsync() {
-        this.#minecraftVer = this.#resourcePack.getMCVerFromPackFormat();
+        const mcVer = this.#resourcePack.getMCVer() ?? ExtraSounds.getCompatMCVerFromExtraSoundsVer(this.#extraSoundsVer);
         const tasks = [];
         tasks.push((async () => {
-            await MinecraftAssets.getMCAssetsJsonAsync(this.#minecraftVer)
+            await MinecraftAssets.getMCAssetsJsonAsync(mcVer)
                 .then(json => {
                     Object.keys(json['objects'])
                         .filter(key => !key.endsWith('.ogg') || key.startsWith('minecraft/sounds/music/'))
@@ -76,7 +73,7 @@ class StateHandler {
                 });
         })());
         tasks.push((async () => {
-            await MinecraftAssets.getMCSoundsJsonAsync(this.#minecraftVer)
+            await MinecraftAssets.getMCSoundsJsonAsync(mcVer)
                 .then(json => {
                     Object.keys(json)
                         .filter(key => {
@@ -90,7 +87,7 @@ class StateHandler {
                 });
         })());
         tasks.push((async () => {
-            const autoGen = await ExtraSounds.fetchAutoGenSoundsJsonAsync(this.#minecraftVer);
+            const autoGen = await ExtraSounds.fetchAutoGenSoundsJsonAsync(mcVer);
             const soundsJson = await ExtraSounds.fetchSoundsJsonAsync(this.#extraSoundsVer);
             await MinecraftAssets.mergeSoundsJson(autoGen, soundsJson).then(json => {
                 this.#modSoundsJson['extrasounds'] = json;
@@ -142,6 +139,7 @@ class StateHandler {
         const mcVer = ExtraSounds.getCompatMCVerFromExtraSoundsVer(extraSoundsVer);
         // Update pack_format.
         this.#resourcePack.setPackFormatFromMCVer(mcVer);
+        this.#resourcePack.setMCVer(mcVer);
         // Obtain sounds.json by version.
         await this.refreshJsonAsync();
         // TODO: Check missing sound entry when pack_format downgraded
@@ -279,10 +277,6 @@ class StateHandler {
 
     static getVanillaSoundsJson() {
         return this.#vanillaSoundsJson;
-    }
-
-    static getMinecraftVersion() {
-        return this.#minecraftVer;
     }
 }
 

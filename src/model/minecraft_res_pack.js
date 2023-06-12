@@ -9,14 +9,18 @@ import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 
 import Arrays from '../util/arrays.js';
+import MinecraftAssets from './minecraft_assets.js';
 
 /** @type {{ [minecraftVersion: string]: number }} */
 const packFormats = {};
 
+const LATEST_VER_STR = MinecraftAssets.latestVerStr;
+
 const mcMetaJsonDefault = JSON.stringify({
     'pack': {
         'pack_format': 0,
-        'description': 'Generated with https://www.kow08absty.com/extrasounds/respack-editor'
+        'description': 'Generated with https://www.kow08absty.com/extrasounds/respack-editor',
+        'x_mc_version': LATEST_VER_STR
     }
 });
 
@@ -37,7 +41,7 @@ export default class MinecraftResPack {
     }
 
     /**
-     * Fetches the pack_version corresponding to the version of Minecraft from GitHub's API.
+     * Fetches the pack_version corresponding to the Minecraft version from GitHub API.
      *
      * @returns {Promise<{ [minecraftVersion: string]: number }>} Object in Promise.
      */
@@ -113,8 +117,33 @@ export default class MinecraftResPack {
         this.zip.file(mcMeraFile, JSON.stringify(this.mcMetaJson, null, 2));
         this.zip.file(extraSoundsJsonFile, JSON.stringify(this.soundsJson, null, 2));
         this.zip.generateAsync({ type: 'blob' }).then(content => {
-            FileSaver.saveAs(content, `ExtraSounds-CustomResPack-${this.getMCVerFromPackFormat()}.zip`);
+            FileSaver.saveAs(content, `ExtraSounds-CustomResPack-${this.getMCVer()}.zip`);
         });
+    }
+
+    /**
+     * Attempts to get the Minecraft version string from 'pack.mcmeta'.
+     *
+     * @returns {string} Minecraft version.
+     */
+    getMCVer() {
+        const result = this.mcMetaJson['pack']['x_mc_version'];
+        if (!result) {
+            return this.getMCVerFromPackFormat();
+        } else if (result === LATEST_VER_STR) {
+            return this.getLatestMCVer();
+        } else {
+            return result;
+        }
+    }
+
+    /**
+     * Sets the Minecraft version string to 'pack.mcmeta'.
+     *
+     * @param {string} mcVer Target Minecraft version.
+     */
+    setMCVer(mcVer) {
+        this.mcMetaJson['pack']['x_mc_version'] = mcVer;
     }
 
     /**
@@ -123,7 +152,7 @@ export default class MinecraftResPack {
      * @returns {string} Minecraft version.
      */
     getMCVerFromPackFormat() {
-        let result = 'latest';
+        let result = LATEST_VER_STR;
         Object.keys(packFormats).forEach(mcVer => {
             if (packFormats[mcVer] === this.getPackFormat()) {
                 result = mcVer;
@@ -137,9 +166,9 @@ export default class MinecraftResPack {
      *
      * @param {string} targetMCVer Minecraft version.
      */
-    setPackFormatFromMCVer(targetMCVer = 'latest') {
+    setPackFormatFromMCVer(targetMCVer = LATEST_VER_STR) {
         const versions = Arrays.versionSort(Object.keys(packFormats));
-        if (targetMCVer === 'latest') {
+        if (targetMCVer === LATEST_VER_STR) {
             targetMCVer = versions[0];
         }
         let packFormat = packFormats[targetMCVer];
@@ -163,5 +192,9 @@ export default class MinecraftResPack {
      */
     getPackFormat() {
         return this.mcMetaJson['pack']['pack_format'];
+    }
+
+    getLatestMCVer() {
+        return Arrays.versionSort(Object.keys(packFormats))[0];
     }
 }
