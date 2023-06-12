@@ -8,30 +8,50 @@ All notable changes to this project will be documented in this file.
 * Zip file-tree customization feature such as can be added an ogg sound file.
 * Supports custom namespace.
 
-### 🐛 Bugs
+### 💭 Bugs / Issues
 
 <!--* <small>_Any bugs/issues will be written here when found._</small>-->
 * Retarget ResourcePack feature is still work in progress.
 
+## [0.2.4-indev] - 2023-06-13 JST
+### ✨ Added
+
+* Supports Minecraft 1.20.1.
+
+### 🔧 Fixed
+
+* ExtraSounds version is only determined as `dev` when uploading ResourcePack.
+
+### 👷 Technical
+
+* Add field `x_mc_version` in `pack.mcmeta` to determine Minecraft version instead of
+  parsing from `pack_format`.
+* Check if `pack_format` is supported by the Minecraft version.
+
 ## [0.2.3-indev] - 2023-06-08 JST
 ### ✨ Added
+
 * Supports Minecraft 1.20.
 
 ### 🔧 Fixed
+
 * Check if the sound entry contains empty sound name when generating zip.
 
 ## [0.2.2-indev.1] - 2023-05-20 JST
 ### 🔥 Hotfix
+
 * Asset fetch algorism has been changed.
 
 ## [0.2.2-indev] - 2023-05-20 JST
 ### ✨ Added
+
 * If ResourcePack contains source entry and when be clicked, focus it and open accordion.
 * Check if the sound entry makes infinite loop.<br>
   This will be caused both entry and sound have the same name
   (such as `action.bow` includes `extrasounds:action.bow` and its type is marked as Event).
 
 ### 🔧 Fixed
+
 * CORS check update in `curl.php` for proxy site.
 * Limit the item count for the searched results.
 * More carefully to handle sound entries.
