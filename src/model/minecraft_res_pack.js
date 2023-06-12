@@ -10,12 +10,8 @@ import FileSaver from 'file-saver';
 
 import Arrays from '../util/arrays.js';
 
-const mcPackVersions = {};
-fetch('https://api.github.com/gists/db752e2c19505c6b0e4cc4a944da3dc0')
-    .then(response => response.json())
-    .then(gistDataJson => fetch(gistDataJson['files']['minecraft_res_pack_format.json']['raw_url']))
-    .then(response => response.json())
-    .then(corrVersJson => Object.assign(mcPackVersions, corrVersJson));
+/** @type {{ [minecraftVersion: string]: number }} */
+const packFormats = {};
 
 const mcMetaJsonDefault = JSON.stringify({
     'pack': {
@@ -38,6 +34,22 @@ export default class MinecraftResPack {
     constructor() {
         this.mcMetaJson = JSON.parse(mcMetaJsonDefault);
         this.zip = new JSZip();
+    }
+
+    /**
+     * Fetches the pack_version corresponding to the version of Minecraft from GitHub's API.
+     *
+     * @returns {Promise<{ [minecraftVersion: string]: number }>} Object in Promise.
+     */
+    static async fetchPackFormatDataAsync() {
+        return fetch('https://api.github.com/gists/db752e2c19505c6b0e4cc4a944da3dc0')
+            .then(response => response.json())
+            .then(gistDataJson => fetch(gistDataJson['files']['minecraft_res_pack_format.json']['raw_url']))
+            .then(response => response.json())
+            .then(corrVersJson => {
+                Object.assign(packFormats, corrVersJson);
+                return packFormats;
+            });
     }
 
     /**
@@ -112,8 +124,8 @@ export default class MinecraftResPack {
      */
     getMCVerFromPackFormat() {
         let result = 'latest';
-        Object.keys(mcPackVersions).forEach(mcVer => {
-            if (mcPackVersions[mcVer] === this.getPackFormat()) {
+        Object.keys(packFormats).forEach(mcVer => {
+            if (packFormats[mcVer] === this.getPackFormat()) {
                 result = mcVer;
             }
         });
@@ -126,15 +138,15 @@ export default class MinecraftResPack {
      * @param {string} targetMCVer Minecraft version.
      */
     setPackFormatFromMCVer(targetMCVer = 'latest') {
-        const versions = Arrays.versionSort(Object.keys(mcPackVersions));
+        const versions = Arrays.versionSort(Object.keys(packFormats));
         if (targetMCVer === 'latest') {
             targetMCVer = versions[0];
         }
-        let packFormat = mcPackVersions[targetMCVer];
+        let packFormat = packFormats[targetMCVer];
         for (let i = 0; i < versions.length && packFormat === undefined; ++i) {
             const ver = versions[i];
             if (targetMCVer.localeCompare(ver, [], { numeric: true }) >= 0) {
-                packFormat = mcPackVersions[ver];
+                packFormat = packFormats[ver];
                 break;
             }
         }

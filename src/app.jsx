@@ -21,6 +21,7 @@ import SimpleBoxAnimator from './components/simple_box_animator.jsx';
 
 import './scss/index.scss';
 import packageJson from '../package.json';
+import MinecraftResPack from './model/minecraft_res_pack.js';
 
 const darkTheme = createTheme({
     palette: {
@@ -47,6 +48,7 @@ const App = () => {
 
     useMemo(async () => {
         await ExtraSounds.fetchTagRevisionsAsync();
+        await MinecraftResPack.fetchPackFormatDataAsync();
         document.title = packageJson.description;
         setMayBusyWait(false);
     }, []);
@@ -68,8 +70,8 @@ const App = () => {
     /**
      * Moves to the EditScreen when succeeded to fetch required data.
      *
-     * @param {import('./model/minecraft_res_pack.js').default} currentPack Target ResourcePack.
-     * @param {string} extraSoundsVer                                       Target ExtraSounds version.
+     * @param {MinecraftResPack} currentPack Target ResourcePack.
+     * @param {string} extraSoundsVer        Target ExtraSounds version.
      */
     const createProject = (currentPack, extraSoundsVer) => {
         StateHandler.createProjectAsync(currentPack, extraSoundsVer)

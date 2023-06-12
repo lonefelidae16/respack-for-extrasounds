@@ -14,8 +14,8 @@ const MCVerRegex = {
     'withoutPatch': /\d+\.\d+/
 };
 
-const player = new Audio();
-player.preservesPitch = false;
+const audioPlayer = new Audio();
+audioPlayer.preservesPitch = false;
 
 const getSoundsJsonUri = (revision) => {
     return soundsJsonUriTemplate.replace('${revision}', encodeURI(revision));
@@ -38,11 +38,11 @@ export default class ExtraSounds {
      * @param {number} pitch  The pitch value.
      */
     static async playSoundAsync(uri, volume = 1.0, pitch = 1.0) {
-        player.pause();
-        player.src = uri;
-        player.volume = MathHelper.clamp(volume, 0.0, 1.0);
-        player.playbackRate = MathHelper.clamp(pitch, 0.1, 2.0);
-        return player.play();
+        audioPlayer.pause();
+        audioPlayer.src = uri;
+        audioPlayer.volume = MathHelper.clamp(volume, 0.0, 1.0);
+        audioPlayer.playbackRate = MathHelper.clamp(pitch, 0.1, 2.0);
+        return audioPlayer.play();
     }
 
     /**
@@ -79,7 +79,7 @@ export default class ExtraSounds {
      * @param {string} revision Target revision, can be commit SHA, branch name or tag name. Default is 'dev'.
      * @returns {Promise<SoundsJson>} The json object which parsed from sounds.json.
      */
-    static async fetchSoundsJsonAsync(revision = 'dev') {
+    static async fetchSoundsJsonAsync(revision = this.defaultRef) {
         return fetch(getSoundsJsonUri(revision))
             .then(response => response.json())
             .then(json => fetch(json['download_url']))
@@ -93,7 +93,7 @@ export default class ExtraSounds {
      * @param {string} revision Target revision, can be commit SHA, branch name or tag name. Default is 'dev'.
      * @returns {Promise<object>} The json object which parsed from schema.json.
      */
-    static async fetchSoundsJsonSchemaAsync(revision = 'dev') {
+    static async fetchSoundsJsonSchemaAsync(revision = this.defaultRef) {
         return fetch(getSoundsSchemaJsonUri(revision))
             .then(response => response.json())
             .then(json => fetch(json['download_url']))
@@ -106,7 +106,7 @@ export default class ExtraSounds {
      * @param {string} esVer Target ExtraSounds version.
      * @returns Minecraft version string.
      */
-    static getCompatMCVerFromExtraSoundsVer(esVer = 'dev') {
+    static getCompatMCVerFromExtraSoundsVer(esVer = this.defaultRef) {
         let mcVer = 'latest';
         this.revisions.forEach(tag => {
             if (tag['tag'] !== esVer) {

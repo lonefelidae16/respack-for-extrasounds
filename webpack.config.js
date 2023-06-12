@@ -100,11 +100,11 @@ module.exports = {
             patterns: [
                 {
                     from: Path.resolve(__dirname, 'backend'),
-                    to: Path.resolve(__dirname, 'dist/backend'),
+                    to: Path.resolve(outputPath, 'backend'),
                 },
                 {
                     from: Path.resolve(__dirname, 'generated'),
-                    to: Path.resolve(__dirname, 'dist/generated'),
+                    to: Path.resolve(outputPath, 'generated'),
                 },
             ],
         }),
