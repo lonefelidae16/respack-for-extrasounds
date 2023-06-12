@@ -1,6 +1,6 @@
 {
     "name": "respack-editor-extrasounds",
-    "version": "0.2.3-indev",
+    "version": "0.2.4-indev",
     "description": "ResourcePack Editor for ExtraSounds",
     "scripts": {
         "build": "npx webpack",
