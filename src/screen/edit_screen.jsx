@@ -300,12 +300,20 @@ const EditScreen = (props) => {
         return null;
     }
 
-    return (!StateHandler.getResourcePack()) ? (
-        <>
-            <div className='error-msg center'>{t('Something went wrong...')} <a href='#' onClick={ () => location.reload() }>{t('Please refresh this page.')}</a></div>
-            <div style={ { position: 'absolute', left: '50%' } }><SimpleBoxAnimator /></div>
-        </>
-    ) : (
+    const resPack = StateHandler.getResourcePack();
+    if (!resPack) {
+        return (
+            <>
+                <div className='error-msg center'>{t('Something went wrong...')} <a href='#' onClick={ () => location.reload() }>{t('Please refresh this page.')}</a></div>
+                <div style={ { position: 'absolute', left: '50%' } }><SimpleBoxAnimator /></div>
+            </>
+        );
+    }
+
+    const mcVer = resPack.getMCVer();
+    const format = resPack.getPackFormat();
+    const isValidPackFormat = resPack.checkExactPackFormat(mcVer);
+    return (
         <>
             <main>
                 <div className='edit-header'>
@@ -323,21 +331,32 @@ const EditScreen = (props) => {
                         <TextField
                             label='Minecraft'
                             id='mc-ver'
-                            value={ StateHandler.getResourcePack().getMCVer() }
+                            value={ mcVer }
                             size='small'
                             variant='standard'
                             disabled
                             sx={ { maxWidth: '4em' } }
                         />
-                        <TextField
-                            label={ t('Format') }
-                            id='pack-format-num'
-                            value={ StateHandler.getResourcePack().getPackFormat() }
-                            size='small'
-                            variant='standard'
-                            disabled
-                            sx={ { maxWidth: '3em' } }
-                        />
+                        <Tooltip
+                            title={
+                                !isValidPackFormat ?
+                                    t('Format %d is incompatible with Minecraft %s.')
+                                        .replace('%d', format)
+                                        .replace('%s', mcVer) :
+                                    ''
+                            }
+                            arrow>
+                            <TextField
+                                label={ t('Format') }
+                                id='pack-format-num'
+                                value={ format }
+                                size='small'
+                                variant='standard'
+                                error={ !isValidPackFormat }
+                                disabled
+                                sx={ { maxWidth: '3em' } }
+                            />
+                        </Tooltip>
                     </div>
                     <div>
                         <Tooltip title={ t('EXPERIMENTAL: This functionality is not completed yet.') } arrow>

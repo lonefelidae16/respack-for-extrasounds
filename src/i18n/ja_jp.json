@@ -24,6 +24,7 @@
 
     "ResourcePack info:": "リソースパック:",
     "Format": "フォーマット",
+    "Format %d is incompatible with Minecraft %s.": "フォーマット %d は Minecraft バージョン %s に対応していません。",
     "Retarget *": "バージョンを変更 *",
     "EXPERIMENTAL: This functionality is not completed yet.": "実験的: パックバージョンの変更機能は完全には対応していません。",
     "Download Zip": "パックをダウンロード",

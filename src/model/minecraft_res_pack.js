@@ -167,10 +167,14 @@ export default class MinecraftResPack {
      * @param {string} targetMCVer Minecraft version.
      */
     setPackFormatFromMCVer(targetMCVer = LATEST_VER_STR) {
-        const versions = Arrays.versionSort(Object.keys(packFormats));
         if (targetMCVer === LATEST_VER_STR) {
-            targetMCVer = versions[0];
+            targetMCVer = this.getLatestMCVer();
         }
+        this.mcMetaJson['pack']['pack_format'] = this.retrievePackFormatFromMCVer(targetMCVer);
+    }
+
+    retrievePackFormatFromMCVer(targetMCVer) {
+        const versions = Arrays.versionSort(Object.keys(packFormats));
         let packFormat = packFormats[targetMCVer];
         for (let i = 0; i < versions.length && packFormat === undefined; ++i) {
             const ver = versions[i];
@@ -179,10 +183,7 @@ export default class MinecraftResPack {
                 break;
             }
         }
-        if (packFormat === undefined) {
-            packFormat = -1;
-        }
-        this.mcMetaJson['pack']['pack_format'] = packFormat;
+        return packFormat ?? 0;
     }
 
     /**
@@ -196,5 +197,19 @@ export default class MinecraftResPack {
 
     getLatestMCVer() {
         return Arrays.versionSort(Object.keys(packFormats))[0];
+    }
+
+    /**
+     * Determines if this pack_format matches for target Minecraft version.
+     *
+     * @returns {boolean} True if this pack has valid format integer.
+     */
+    checkExactPackFormat(mcVer = LATEST_VER_STR) {
+        if (mcVer === LATEST_VER_STR) {
+            mcVer = this.getLatestMCVer();
+        }
+        const packFormat = this.getPackFormat();
+        const expectedPackFormat = this.retrievePackFormatFromMCVer(mcVer);
+        return packFormat === expectedPackFormat;
     }
 }

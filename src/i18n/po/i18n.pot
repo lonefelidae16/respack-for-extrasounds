@@ -5,9 +5,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: respack-editor-extrasounds 0.2.2-indev\n"
+"Project-Id-Version: respack-editor-extrasounds 0.2.3-indev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-20 11:03+0900\n"
+"POT-Creation-Date: 2023-06-10 22:27+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,16 +16,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: app.jsx:80
+#: app.jsx:82
 msgid "Failed to connect the Official Minecraft server."
 msgstr ""
 
-#: app.jsx:80
+#: app.jsx:82
 msgid "Try to reload this page?"
 msgstr ""
 
 #: components/es_version_selector.jsx:28 components/es_version_selector.jsx:33
-#: screen/edit_screen.jsx:312
+#: screen/edit_screen.jsx:322
 msgid "version"
 msgstr ""
 
@@ -45,67 +45,71 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:225
+#: components/sound_entry_editor.jsx:226
 msgid "Edit Entry name:"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:252
-msgid "Entry"
+#: components/sound_entry_editor.jsx:239
+msgid "This Entry contains some empty Sound Name."
 msgstr ""
 
 #: components/sound_entry_editor.jsx:256
+msgid "Entry"
+msgstr ""
+
+#: components/sound_entry_editor.jsx:260
 msgid "This name is already exists."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:267
+#: components/sound_entry_editor.jsx:271
 msgid "Remove this Entry."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:298
+#: components/sound_entry_editor.jsx:303
 msgid "Sound Name"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:301
+#: components/sound_entry_editor.jsx:306
 msgid "Sound Name cannot be the same its Entry Name."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:308
+#: components/sound_entry_editor.jsx:313
 msgid "Remove this sound."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:316
+#: components/sound_entry_editor.jsx:321
 msgid "Volume"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:334
+#: components/sound_entry_editor.jsx:339
 msgid "Pitch"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:353
+#: components/sound_entry_editor.jsx:358
 msgid "Weight"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:365
+#: components/sound_entry_editor.jsx:370
 msgid "If unchecked, this \"Sound Name\" is interpreted as a file."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:368
+#: components/sound_entry_editor.jsx:373
 msgid "Event"
 msgstr ""
 
-#: components/sound_entry_editor.jsx:374
+#: components/sound_entry_editor.jsx:379
 msgid "An error occurred..."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:374
+#: components/sound_entry_editor.jsx:379
 msgid "Play this sound."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:374
+#: components/sound_entry_editor.jsx:379
 msgid "The result may be different in game."
 msgstr ""
 
-#: components/sound_entry_editor.jsx:390
+#: components/sound_entry_editor.jsx:395
 msgid "Click to add sound."
 msgstr ""
 
@@ -130,51 +134,56 @@ msgstr ""
 msgid "Entry Name"
 msgstr ""
 
-#: screen/edit_screen.jsx:113
+#: screen/edit_screen.jsx:120
 msgid "Failed to retarget ResourcePack."
 msgstr ""
 
-#: screen/edit_screen.jsx:113
+#: screen/edit_screen.jsx:120
 msgid "Reason:"
 msgstr ""
 
-#: screen/edit_screen.jsx:302
+#: screen/edit_screen.jsx:307
 msgid "Something went wrong..."
 msgstr ""
 
-#: screen/edit_screen.jsx:302
+#: screen/edit_screen.jsx:307
 msgid "Please refresh this page."
 msgstr ""
 
-#: screen/edit_screen.jsx:310
+#: screen/edit_screen.jsx:320
 msgid "ResourcePack info:"
 msgstr ""
 
-#: screen/edit_screen.jsx:330
+#: screen/edit_screen.jsx:342
+#, python-format
+msgid "Format %d is incompatible with Minecraft %s."
+msgstr ""
+
+#: screen/edit_screen.jsx:349
 msgid "Format"
 msgstr ""
 
-#: screen/edit_screen.jsx:340
+#: screen/edit_screen.jsx:361
 msgid "EXPERIMENTAL: This functionality is not completed yet."
 msgstr ""
 
-#: screen/edit_screen.jsx:341
+#: screen/edit_screen.jsx:362
 msgid "Retarget *"
 msgstr ""
 
-#: screen/edit_screen.jsx:344
+#: screen/edit_screen.jsx:365
 msgid "Download Zip"
 msgstr ""
 
-#: screen/edit_screen.jsx:367
+#: screen/edit_screen.jsx:388
 msgid "ResourcePack"
 msgstr ""
 
-#: screen/edit_screen.jsx:378
+#: screen/edit_screen.jsx:399
 msgid "Retarget ResourcePack"
 msgstr ""
 
-#: screen/edit_screen.jsx:383
+#: screen/edit_screen.jsx:404
 msgid "Execute"
 msgstr ""
 
@@ -194,38 +203,38 @@ msgstr ""
 msgid "Continue anyway"
 msgstr ""
 
-#: screen/start_screen.jsx:65
+#: screen/start_screen.jsx:66
 msgid "Error while unzipping resource pack."
 msgstr ""
 
-#: screen/start_screen.jsx:68
+#: screen/start_screen.jsx:69
 msgid "Error while reading resource pack:"
 msgstr ""
 
-#: screen/start_screen.jsx:68
+#: screen/start_screen.jsx:69
 msgid "Following files are missing or invalid."
 msgstr ""
 
-#: screen/start_screen.jsx:89
+#: screen/start_screen.jsx:91
 msgid "View source on GitHub"
 msgstr ""
 
-#: screen/start_screen.jsx:94
+#: screen/start_screen.jsx:96
 msgid "Continue Editing?"
 msgstr ""
 
-#: screen/start_screen.jsx:96
+#: screen/start_screen.jsx:98
 msgid "Choose Resource Pack"
 msgstr ""
 
-#: screen/start_screen.jsx:102
+#: screen/start_screen.jsx:104
 msgid "Start Customization."
 msgstr ""
 
-#: screen/start_screen.jsx:104
+#: screen/start_screen.jsx:106
 msgid "Create New Project"
 msgstr ""
 
-#: screen/start_screen.jsx:109
+#: screen/start_screen.jsx:111
 msgid "Localization feature is currently under development."
 msgstr ""
